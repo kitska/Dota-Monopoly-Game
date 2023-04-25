@@ -1,0 +1,42 @@
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/timer.css" />
+	</styles>
+	<scripts>
+		<include src="s2r://panorama/scripts/custom_game/timer.js" />
+	</scripts>
+	<Panel class="MainTimer" hittest="false">
+		<Panel class="AllTimer" id="AllTimer">
+			<Panel class="EncounterWave" id="EncounterWave">
+				<Label class="SimpleText" id="EncounterWaveText" />
+			</Panel>
+			<Panel class="TimerBar" id="TimerBar">
+				<Panel class="TimerTime" id="TimerTime" />
+				<Label class="TimerText" id="TimerText" />
+			</Panel>
+			<Panel class="InfoBar" id="InfoBar">
+				<Panel class="Encounter" id="Encounter">
+					<Panel class="EncounterSkill" id="EncounterSkill">
+						<Label class="SkillsText" id="EncounterSkillText" />
+						<Panel class="SkillIcons" id="SkillIcons">
+							<Panel class="MkbIcon" id="MkbIcon" />
+							<DOTAAbilityImage class="SkillIcon" id="SkillIcon1" />
+							<DOTAAbilityImage class="SkillIcon" id="SkillIcon2" />
+							<DOTAAbilityImage class="SkillIcon" id="SkillIcon3" />
+							<DOTAAbilityImage class="SkillIcon" id="SkillIcon4" />
+						</Panel>
+						<Panel class="UpgradeWave" id="UpgradeWave">
+							<Label class="UpgradeWaveText" id="UpgradeWaveText" />
+						</Panel>
+						<Panel class="NecroWave" id="NecroWave" />
+					</Panel>
+					<Panel class="Reward" id="Reward">
+						<Label class="RewardText" id="RewardText" />
+						<Panel class="RewardIcon" id="RewardIcon" />
+						<Panel class="GoldIcon" id="GoldIcon" />
+					</Panel>
+				</Panel>
+			</Panel>
+		</Panel>
+	</Panel>
+</root>

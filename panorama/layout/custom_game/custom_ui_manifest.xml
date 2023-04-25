@@ -1,0 +1,64 @@
+<root>
+	<script><![CDATA[
+
+
+
+
+var dotaHud = $.GetContextPanel().GetParent().GetParent().GetParent()
+dotaHud.FindChildTraverse("StatBranch").style.visibility = "collapse";
+
+
+
+var mapHud = dotaHud.FindChildTraverse("HUDSkinMinimap")
+
+if (mapHud)
+{
+   mapHud.style.visibility = "collapse"     
+}
+
+var TopHud = dotaHud.FindChildTraverse("HUDSkinTopBarBG")
+
+if (TopHud)
+{
+   TopHud.style.visibility = "collapse"     
+}
+
+dotaHud.FindChildTraverse("DOTAStatBranch").style.visibility = "collapse";
+
+var ChatHud = dotaHud.FindChildTraverse("HudChat")
+if ( !Game.IsInToolsMode() )
+{
+    ChatHud.DeleteAsync(0)     
+}
+
+
+dotaHud.FindChildTraverse("level_stats_frame").style.visibility = "collapse";
+
+dotaHud.FindChildTraverse("inventory_tpscroll_HotkeyContainer").FindChildTraverse("Hotkey").style.visibility = "visible"
+
+
+
+GameUI.SetDefaultUIEnabled( DotaDefaultUIElement_t.DOTA_DEFAULT_UI_TOP_HEROES, false );
+GameUI.SetDefaultUIEnabled( DotaDefaultUIElement_t.DOTA_DEFAULT_UI_ENDGAME, false );
+
+GameEvents.Subscribe("Attack_Base", function(data) 
+{
+    Game.EmitSound(data.sound);
+})
+
+
+GameEvents.Subscribe("CreateIngameErrorMessage", function(data) 
+        {
+            GameEvents.SendEventClientSide("dota_hud_error_message", 
+            {
+                "splitscreenplayer": 0,
+                "reason": data.reason || 80,
+                "message": data.message
+            })
+        })
+
+]]></script>
+	<Panel>
+		<CustomUIElement type="Hud" layoutfile="s2r://panorama/layout/custom_game/timer.vxml_c" />
+	</Panel>
+</root>

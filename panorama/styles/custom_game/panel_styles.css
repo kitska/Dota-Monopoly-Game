@@ -1,0 +1,39 @@
+.button:hover {
+    box-shadow: 0 0 5px aqua;
+    /* делаем свечение по краям при наведении*/
+}
+
+.button:active {
+    box-shadow: 0 0 5px green;
+    /* делаем свечение по краям при нажатии*/
+    background-color: green;
+    /*меняем цвет при нажатии*/
+}
+.button {
+    height: 50px;
+    /* высота*/
+    width: 50px;
+    /* ширина*/
+    background-color: aqua;
+    /* фон цвета aqua*/
+    position: 225px 225px 0;
+    /* делаем кнопку по середине*/
+    border-radius: 5px;
+    /*скругляем края*/
+}
+.general {
+    height: 500px;
+    width: 500px;
+    background-color: red;
+    border-radius: 20px;
+    position: 40% 25% 0px;
+    animation-name: myanim;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: 1;
+}
+
+.general:hover {
+    background-color: blue;
+    /* при наведении ставим цвет заливки синий*/
+}

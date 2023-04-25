@@ -1,0 +1,328 @@
+
+
+@keyframes TimerAnimationClose{
+
+
+    100%{         transform: translate3d( 0, 0, 0px ); opacity: 1;}
+    0%{     transform: translate3d( -10%, 0, 0px ); opacity: 0;}
+    20%{     opacity: 0;}
+}
+
+
+.MainTimer{width: 100%; height: 100%;}
+
+.AllTimer{
+
+ width: 480px; height: 162px;
+
+ margin-top: 10%;
+ margin-left: 1%;
+ visibility: visible;
+ z-index: 5;
+ flow-children: down;
+}
+
+
+
+.AllTimer_hide{
+ animation-name: TimerAnimationClose;
+    animation-duration: 0.45s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: 1;
+    animation-direction: reverse;
+ width: 25%; height: 15%;
+
+ margin-top: 10%;
+ margin-left: 1%;
+ visibility: visible;
+ z-index: 5;
+ flow-children: down;
+}
+
+
+
+
+.EncounterWave{
+width: 100%; height: 20%;
+
+ margin-top: 0%;
+  margin-left: 0%;
+   visibility: visible;
+
+    z-index: 5;
+  flow-children: right;
+}
+
+
+
+
+.TimerBar{
+
+
+ width: 100%; height: 17%;
+
+  margin-left: 0%;
+   visibility: visible;
+ background-color: rgba(10, 10, 10, 0.99);
+ border: 1px solid #888;
+    z-index: 5;
+}
+
+.TimerTime{
+
+transition-property: width;
+transition-duration: 0.5s;
+width: 100%; height: 74%;
+
+margin-top: 12.5%;
+margin-left: 0%;
+visibility: visible;
+
+background-color: gradient( linear, 0% 0%, 100% 0%, from( #440000 ), to( #ff0000 ) );
+z-index: 5;
+}
+
+.TimerTimeRed{
+
+background-color: gradient( linear, 0% 0%, 100% 0%, from( #440000 ), to( #ff0000 ) );
+}
+
+.TimerTimeGreen{
+
+background-color: gradient( linear, 0% 0%, 0% 100%, from( #279b0c ), to( #0c2f04 ) );
+}
+
+
+
+.TimerText{
+
+
+ font-family: defaultFont;
+ font-weight: bold;
+ color: #e7e7e7;
+ text-shadow: 1px 1px 2px 3 black;
+  z-index: 8;
+  margin-right: 5px;
+ align: right center;
+ font-size: 23px;
+ text-align: center;
+}
+
+
+
+
+
+
+
+
+
+.InfoBar{
+
+ width: 100%; height: 60%;
+
+  margin-left: 0%;
+   visibility: visible;
+
+    z-index: 5;
+  flow-children: right;
+}
+
+
+
+
+
+
+
+.Encounter{
+
+ width: 100%; height: 100%;
+
+ margin-top: 0%;
+  margin-left: 0%;
+   visibility: visible;
+
+    z-index: 5;
+  flow-children: down;
+}
+
+
+
+
+.EncounterSkill{
+
+width: 100%; height: 50%;
+
+ margin-top: 0%;
+  margin-left: 0%;
+   visibility: visible;
+
+    z-index: 5;
+  flow-children: right;
+}
+
+
+
+.SkillsText{
+
+
+ font-family: defaultFont;
+ color: #e7e7e7;
+ text-shadow: 1px 1px 2px 3 black;
+  z-index: 8;
+ align: left center;
+ font-size: 22px;
+ text-align: left;
+}
+
+
+
+
+
+.SimpleText{
+
+
+ font-family: defaultFont;
+ color: #e7e7e7;
+ text-shadow: 1px 1px 2px 3 black;
+  z-index: 8;
+  margin-right: 5px;
+ align: left center;
+ font-size: 22px;
+ text-align: center;
+}
+
+
+
+
+.RewardText{
+
+
+ font-family: defaultFont;
+ color: #e7e7e7;
+ text-shadow: 1px 1px 2px 3 black;
+  z-index: 8;
+  margin-top: 10%;
+ align: left center;
+ font-size: 22px;
+ text-align: center;
+}
+
+
+
+
+
+
+.SkillIcons{
+
+ height: 100%;
+ width: 50%;
+ align: left center;
+   visibility: visible;
+
+    z-index: 5;
+  flow-children: right;
+}
+
+.MkbIcon{
+ background-image: url("s2r://panorama/images/custom_game/mkb_png.vtex");
+
+ width: 15.3%; height: 75%;
+ margin-left: 1%;
+ background-size: contain;
+ align: left center;
+   visibility: visible;
+ border: 1px solid #888;
+    z-index: 5;
+}
+
+
+.SkillIcon{
+
+ width: 15.3%; height: 75%;
+
+ background-size: contain;
+ align: left center;
+ border: 1px solid #888;
+  margin-left: 1.5%;
+   visibility: visible;
+    z-index: 5;
+}
+
+
+.RewardIcon{
+
+ width: 11.1%; height: 80%;
+
+ background-size: contain;
+ align: left center;
+ border: 1px solid #888;
+   visibility: visible;
+   margin-left: 1.5%;
+    z-index: 5;
+}
+
+
+.GoldIcon{
+ background-image: url("s2r://panorama/images/custom_game/gold_png.vtex");
+
+ width: 8%; height: 80%;
+ border: 1px solid #888;
+
+ background-size: contain;
+ align: left center;
+  margin-left: 1%;
+   visibility: visible;
+    z-index: 5;
+}
+
+
+
+.Reward{
+
+ width: 100%; height: 50%;
+
+ margin-top: 0%;
+  margin-left: 0%;
+   visibility: visible;
+
+    z-index: 5;
+  flow-children: right;
+}
+
+
+.UpgradeWave{
+
+ width: 10%;
+ height: 73%;
+ margin-right: 5px;
+ vertical-align: center;
+  background-image: url("s2r://panorama/images/custom_game/upgrade_tome_png.vtex");
+ border: 1px solid #999999;
+  background-size: contain;
+}
+
+.NecroWave{
+
+ width: 10%;
+ height: 73%;
+ vertical-align: center;
+ background-color: red;
+  background-image: url("s2r://panorama/images/custom_game/necrobooksmall_png.vtex");
+ border: 1px solid #999999;
+  background-size: contain;
+}
+
+
+.UpgradeWaveText{
+
+
+
+ font-family: defaultFont;
+ color: #e7e7e7;
+ text-shadow: 1px 1px 2px 3 black;
+ z-index: 8;
+ margin-top: 30%;
+ align: left center;
+ font-size: 22px;
+ text-align: center;
+}
