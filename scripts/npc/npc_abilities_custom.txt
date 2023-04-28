@@ -3,65 +3,34 @@
 {
 	"Version"		"1"
 
-<<<<<<< HEAD
 	"Roll"
 	{
 		"BaseClass"						"ability_lua"
 		"ScriptFile"					"roll.lua"
-=======
-	//ROLL SPELL
-	"Roll"
-	{
-		"BaseClass"						"ability_lua"
-		"ScriptFile"					"roll"
->>>>>>> a6fe26846f2a24476fe9c9295bce4c47b2c31eae
 		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
 		"AbilityTextureName"			"roll_icon_128"
 		"MaxLevel"						"1"
 	}
-<<<<<<< HEAD
 
 	"Buy"
 	{
 		"BaseClass"						"ability_lua"
 		"ScriptFile"					"buy.lua"
-=======
-	"Buy"
-	{
-		"BaseClass"						"ability_lua"
-		"ScriptFile"					"buy"
->>>>>>> a6fe26846f2a24476fe9c9295bce4c47b2c31eae
 		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
 		"MaxLevel"						"1"
 		"AbilityTextureName"			"alchemist_goblins_greed"
 
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 	"None"
 	{
 		"BaseClass"					"ability_lua"
 		"ScriptFile"				"none.lua"
-=======
-=======
->>>>>>> a6fe26846f2a24476fe9c9295bce4c47b2c31eae
-	"None"
-	{
-		"BaseClass"					"ability_lua"
-		"ScriptFile"				"none"
-<<<<<<< HEAD
->>>>>>> a6fe26846f2a24476fe9c9295bce4c47b2c31eae
-=======
->>>>>>> a6fe26846f2a24476fe9c9295bce4c47b2c31eae
 		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
 		"MaxLevel"					"1"
 		"AbilityTextureName"		"none"
 	}
-<<<<<<< HEAD
 
-=======
->>>>>>> a6fe26846f2a24476fe9c9295bce4c47b2c31eae
 	"None1"
 	{
 		"BaseClass"					"ability_datadriven"
@@ -70,10 +39,7 @@
 		"MaxLevel"					"1"
 		"AbilityTextureName"		"none"
 	}
-<<<<<<< HEAD
 
-=======
->>>>>>> a6fe26846f2a24476fe9c9295bce4c47b2c31eae
 	"None2"
 	{
 		"BaseClass"					"ability_datadriven"
@@ -82,10 +48,7 @@
 		"MaxLevel"					"1"
 		"AbilityTextureName"		"none"
 	}
-<<<<<<< HEAD
 
-=======
->>>>>>> a6fe26846f2a24476fe9c9295bce4c47b2c31eae
 	"None3"
 	{
 		"BaseClass"					"ability_datadriven"
@@ -94,7 +57,6 @@
 		"MaxLevel"					"1"
 		"AbilityTextureName"		"none"
 	}
-<<<<<<< HEAD
 
 	"Pay_tax"
 	{
@@ -103,7 +65,24 @@
 		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_PASSIVE"
 		"AbilityTextureName"			"bounty_hunter_jinada"
 		"MaxLevel"						"1"
+
+    	"AbilitySpecial"
+    	{
+    	  "01"
+    	  {
+    	    "var_type"          "FIELD_INTEGER"
+    	    "chance"            "100"
+    	  }
+    	  "02"
+    	  {
+    	    "var_type"          "FIELD_INTEGER"
+    	    "gold"     			"0"
+    	  }
+    	  "03"
+    	  {
+    	    "var_type"         "FIELD_INTEGER"
+    	    "damage"           "0"
+    	  }
+    	}
 	}
-=======
->>>>>>> a6fe26846f2a24476fe9c9295bce4c47b2c31eae
 }

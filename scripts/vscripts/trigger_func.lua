@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 require('libraries/timers')
-=======
-
->>>>>>> a6fe26846f2a24476fe9c9295bce4c47b2c31eae
 function angleChangeForFirst( event )
 	player = event.activator
 	player:SetAngles(0,90,0)
@@ -163,7 +159,6 @@ function OnFirstSpawn( event )
 	player:RemoveAbility("Roll")
 	player:RemoveAbility("Buy")
 	player:AddAbility("Roll"):SetLevel(1)
-<<<<<<< HEAD
 end
 
 function OnPayTaxSector( event )
@@ -202,6 +197,4 @@ function OnPayTaxSector( event )
 			end
 		})
     end
-=======
->>>>>>> a6fe26846f2a24476fe9c9295bce4c47b2c31eae
 end

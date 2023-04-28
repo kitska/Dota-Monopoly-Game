@@ -85,15 +85,7 @@ function Dmono:InitGameMode()
 	self.priceSectorIndex[32] = 200
 	self.priceSectorIndex[34] = 350
 	self.priceSectorIndex[36] = 400
-<<<<<<< HEAD
-<<<<<<< HEAD
 	
-=======
-
->>>>>>> a6fe26846f2a24476fe9c9295bce4c47b2c31eae
-=======
-
->>>>>>> a6fe26846f2a24476fe9c9295bce4c47b2c31eae
 	Dmono.places = {
 		Vector(-1732.92, -1565.54, 186),
 		Vector(-1575.39, -1129.84, 186),
@@ -177,14 +169,11 @@ function Dmono:InitGameMode()
 	GameRules:GetGameModeEntity():SetThink("OnThink", self, "GlobalThink", 2)
 
 	ListenToGameEvent('npc_spawned', OnNPCSpawned, nil)
-<<<<<<< HEAD
 	local unit
 	for i = 1, 4 do
 		unit = Entities:FindByName(nil,("pay_tax_entity_"..i))
 		DressPayTaxer(unit)
 	end
-=======
->>>>>>> a6fe26846f2a24476fe9c9295bce4c47b2c31eae
 end
 
 function OnNPCSpawned(keys)
@@ -196,7 +185,6 @@ function OnNPCSpawned(keys)
     end
 end
 
-<<<<<<< HEAD
 function DressPayTaxer( unit )
 	local weaponModel = SpawnEntityFromTableSynchronous("prop_dynamic", {
 		model = "models/items/bounty_hunter/gold_ripperbounty_hunter_weapon/gold_ripperbounty_hunter_weapon.vmdl",
@@ -224,8 +212,6 @@ function DressPayTaxer( unit )
 	headModel:FollowEntity(unit, true) 
 end
 
-=======
->>>>>>> a6fe26846f2a24476fe9c9295bce4c47b2c31eae
 function Dmono:OnPlaeyrChat(keys)
 	return false
 end	
