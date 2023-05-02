@@ -52,7 +52,7 @@ function pay_modifier:OnAttackLanded(params)
 	elseif pos == Dmono:GetSectorPos(29) then
 		cost = 150
 	elseif pos == Dmono:GetSectorPos(39) then
-		cost = 150
+		cost = 100
 	end
 
   if caster == self:GetCaster() then

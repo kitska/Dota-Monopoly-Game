@@ -153,7 +153,7 @@ function changeAbility( event )
 	end
 end
 
-function OnFirstSpawn( event )
+function OnFirstSpawn(event)
 	player = event.activator
 	player:RemoveAbility("None")
 	player:RemoveAbility("Roll")

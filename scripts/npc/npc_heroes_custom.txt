@@ -35,10 +35,10 @@
 		"override_hero"					"npc_dota_hero_clinkz"	// Hero to override
 		"VisionNighttimeRange"			"15000"
 		"VisionDaytimeRange"			"15000"
-		"MovementCapabilities"			"DOTA_UNIT_CAP_MOVE_GROUND"
-		"AttackCapabilities"			"DOTA_UNIT_CAP_RANGED_ATTACK"
+		"MovementCapabilities"			"DOTA_UNIT_CAP_MOVE_NONE"
+		"AttackCapabilities"			"DOTA_UNIT_CAP_NO_ATTACK"
 		
-		"Ability1"						"Pay_tax"
+		"Ability1"						"Roll"
 		"Ability2"						"Buy"		
 		"Ability3"						"None"			
 		"Ability4"						"None"			

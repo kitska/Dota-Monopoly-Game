@@ -28,29 +28,18 @@ end
 
 function Dmono:InitGameMode()
 	print( "Load complete" )
-	self.nCurrentTurn = 0 
-	self.nHousesInBank = 40 
-	self.nComboThrow = 0 
-	self.nPreviousTurn = -1
-
-	self.vNextPos = {}
-	self.vCurrentPos = {} 
-	self.vPlayerIDs = {} 
-	self.vUserIDs = {} 
-	self.vModelName = {} 
-	self.vPlayerOwnership = {} 
-	self.vHeroIndex = {} 
-	self.vPlayersInJail = {}
-	self.vRoundsInJail = {} 
-	self.vLastDiceThrown = {} 
-	self.vPlayersInGame = {} 
 
 	Dmono.RollCount = 0
+	
 	Dmono.BougntSectors = 0
 	Dmono.FakePos = Vector(0,0,0)
 	Dmono.TeamSectorValues = {}
+	Dmono.pIDs = {}
+	Dmono.TurnsQueue = {}
+	Dmono.PlayerNPCs = {}
+	Dmono.CurrentPlayerIndex = 1
+	Dmono:ShuffleQueue(self.pIDs)
 
-	self.bStartTimer = false
 
 	self.m_TeamColors = {}
 	self.m_TeamColors[DOTA_TEAM_GOODGUYS] = { 61, 210, 150 }	--		Teal
@@ -143,6 +132,7 @@ function Dmono:InitGameMode()
 	GameRules:SetStartingGold(1000)
 	GameRules:SetTreeRegrowTime(1)
 
+	GameRules:SetShowcaseTime(0)
 	GameRules:SetCustomGameTeamMaxPlayers(DOTA_TEAM_GOODGUYS,1)
 	GameRules:SetCustomGameTeamMaxPlayers(DOTA_TEAM_BADGUYS,1)
 	GameRules:SetCustomGameTeamMaxPlayers(DOTA_TEAM_CUSTOM_1,1)
@@ -160,15 +150,15 @@ function Dmono:InitGameMode()
 	GameMode:SetStashPurchasingDisabled(true)
 	GameMode:SetAlwaysShowPlayerInventory(false)
 	GameMode:SetTopBarTeamValuesOverride(true)
-	GameMode:SetTopBarTeamValuesVisible(true)
+	GameMode:SetTopBarTeamValuesVisible(false)
 	GameMode:SetRecommendedItemsDisabled(true)
 	GameMode:SetStashPurchasingDisabled(true)
 	GameMode:SetBuybackEnabled(false)
-	GameMode:SetCustomGameForceHero("npc_dota_hero_weaver")
-
+	GameMode:SetDaynightCycleDisabled(false)
 	GameRules:GetGameModeEntity():SetThink("OnThink", self, "GlobalThink", 2)
 
 	ListenToGameEvent('npc_spawned', OnNPCSpawned, nil)
+
 	local unit
 	for i = 1, 4 do
 		unit = Entities:FindByName(nil,("pay_tax_entity_"..i))
@@ -180,9 +170,36 @@ function OnNPCSpawned(keys)
     local npc = EntIndexToHScript(keys.entindex)
     if npc:IsRealHero() then
       local duration = 2
-      local modifier = npc:AddNewModifier(nil, nil, "modifier_stunned", {duration = duration})
-	  local modifier2 = npc:AddNewModifier(nil, nil, "modifier_silence", {duration = duration})
+      local modifier = npc:AddNewModifier(nil, nil, "modifier_stunned", {duration = -1})
+	  local modifier2 = npc:AddNewModifier(nil, nil, "modifier_silence", {duration = -1})
     end
+
+	Dmono.playerCountTeam1 = PlayerResource:GetPlayerCountForTeam(2)
+	Dmono.playerCountTeam2 = PlayerResource:GetPlayerCountForTeam(3)
+	Dmono.playerCountTeam3 = PlayerResource:GetPlayerCountForTeam(6)
+	Dmono.playerCountTeam4 = PlayerResource:GetPlayerCountForTeam(7)
+	Dmono.PlayerCount = Dmono.playerCountTeam1 + Dmono.playerCountTeam2 + Dmono.playerCountTeam3 + Dmono.playerCountTeam4
+
+	if Dmono.PlayerCount == 1 then
+		Dmono.pIDs = {0}
+	elseif Dmono.PlayerCount == 2 then
+		Dmono.pIDs = {0, 1}
+	elseif Dmono.PlayerCount == 3 then
+		Dmono.pIDs = {0, 1, 2}
+	elseif Dmono.PlayerCount == 4 then
+		Dmono.pIDs = {0, 1, 2, 3}
+	end
+
+	if Dmono.PlayerCount > 1 then
+		Dmono:ShuffleQueue(Dmono.pIDs)
+	else
+		Dmono.TurnsQueue = {0}
+	end
+	Dmono:InsertNPC(npc)
+	Dmono:PrintNPC()
+	Dmono:PrintID()
+	print(Dmono:GetCountPlayers() .. " count")
+	Dmono:HandleTurn()
 end
 
 function DressPayTaxer( unit )
@@ -210,70 +227,81 @@ function DressPayTaxer( unit )
 	})
 	headModel:SetParent(unit, "attach_head") 
 	headModel:FollowEntity(unit, true) 
+
+
+	local chestModel = SpawnEntityFromTableSynchronous("prop_dynamic", {
+		model = "models/items/bounty_hunter/old_man_gondar_armor/old_man_gondar_armor.vmdl",
+		origin = unit:GetAbsOrigin(),
+		scale = 1.0, 
+	})
+	chestModel:SetParent(unit, "attach_hitloc")
+	chestModel:FollowEntity(unit, true)
+
+
+	local backModel = SpawnEntityFromTableSynchronous("prop_dynamic", {
+		model = "models/items/bounty_hunter/old_man_gondar_back/old_man_gondar_back.vmdl",
+		origin = unit:GetAbsOrigin(),
+		scale = 1.0, 
+	})
+	backModel:SetParent(unit, "attach_hitloc")
+	backModel:FollowEntity(unit, true)
+	
 end
 
 function Dmono:OnPlaeyrChat(keys)
 	return false
 end	
 
+function Dmono:InsertNPC( npc )
+	table.insert(self.PlayerNPCs, npc)
+end
+
+function Dmono:SetPlayerCount( value )
+	self.PlayerCount = value
+end
+
+function Dmono:GetCountPlayers()
+	return self.PlayerCount
+end
+
+function Dmono:PrintNPC()
+	for i = 1, Utilities:TableSize(self.PlayerNPCs) do
+		print(tostring(self.PlayerNPCs[i]) .. ", ")
+	end
+end
+
+function Dmono:GetValueFromNPC(index)
+	return self.PlayerNPCs[index]
+end
+
 function Dmono:OnThink()
-	if GameRules:State_Get() == DOTA_GAMERULES_STATE_PRE_GAME then
-		if Utilities:GetTimer() == nil then
-			Utilities:SetTimer("Pre-Game Timer", 1)
-		end
-
-	end
-	if GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
-
-		Dmono:CheckGamePause()
-
-		if self.bStartTimer == true then
-			Utilities:CountdownTimer()
-			Dmono:CheckPlayerTurn()
-		end
-		elseif GameRules:State_Get() >= DOTA_GAMERULES_STATE_POST_GAME then
-		return nil
-	end
 	return 1
 end
 
-function Dmono:GetNextHero()
-    local hero = nil
-    local lastHero = self.lastHero or nil
-    for _, playerID in ipairs(self.playerIDs) do
-        local player = PlayerResource:GetPlayer(playerID)
-        if player then
-            local heroList = player:GetAssignedHero()
-            for _, h in ipairs(heroList) do
-                if h ~= lastHero then
-                    hero = h
-                    break
-                end
-            end
-        end
-        if hero then
-            break
-        end
-    end
-    self.lastHero = hero
-    return hero
-end
-
-function Dmono:OnPlayerPickHero(keys)
-	print("--OnPlayerPickHero called!--")
-
-	local hero = EntIndexToHScript(keys.heroindex)
-	local player = EntIndexToHScript(keys.player)
-	local playerID = hero:GetPlayerID()
-	local team = player:GetTeamNumber()
-
-	-- push into tables
-	self.vUserIDs[playerID] = keys.player
-	self.vPlayerIDs[keys.player] = playerID
-	self.vCurrentPos[playerID] = 0
-	self.vNextPos[playerID] = 0
-	self.vHeroIndex[playerID] = hero
-	self.vPlayersInGame[playerID] = 1
+function Dmono:HandleTurn()
+	local QueueTurns = self.TurnsQueue[self.CurrentPlayerIndex] + 1
+	local playerHero = Dmono:GetValueFromNPC(QueueTurns)
+	if playerHero ~= nil then
+		playerHero:RemoveModifierByName("modifier_stunned")
+		playerHero:RemoveModifierByName("modifier_silence")
+		print("turn" ..QueueTurns)
+	  else
+		print("turn" .. QueueTurns)
+		print("Player with ID 0 has no hero registered in the game.")
+	end
+    Timers:CreateTimer("turn_timer", {
+    	endTime = 45,
+    	callback = function()
+			playerHero:AddNewModifier(nil, nil, "modifier_stunned", {duration = -1})
+			playerHero:AddNewModifier(nil, nil, "modifier_silence", {duration = -1})
+			self.CurrentPlayerIndex = self.CurrentPlayerIndex + 1
+			if self.PlayerCount < self.CurrentPlayerIndex then
+				self.CurrentPlayerIndex = 1
+			end
+			Say(nil, "turn changed " .. QueueTurns .. " turn index " .. self.CurrentPlayerIndex .. " player count " .. self.PlayerCount, false)
+			self:HandleTurn()
+    	end
+   	})
 end
 
 function Dmono:ColorForTeam( teamID )
@@ -284,26 +312,10 @@ function Dmono:ColorForTeam( teamID )
 	return color
 end
 
-function Dmono:CheckSectorStatus(sector)
-	return true
-end
-
-function Dmono:GetHeroEntity(pID)
-	return self.vHeroIndex[pID]
-end
-
-function Dmono:GetCurrentTurn()
-	return self.nCurrentTurn
-end
-
-function Dmono:GetCurrentPos(pID)
-	return self.vCurrentPos[pID]
-end
 
 function Dmono:GetSectorPos( index )
 	return self.places[index]
 end
-
 
 function Dmono:SetDictionaryKeyValue( key, value )
 	self.priceSectorIndex[key] = value
@@ -343,88 +355,29 @@ function Dmono:GetBoughtSectors()
 	return self.BougntSectors
 end
 
-function Dmono:SetCurrentPos(nPos, pID)
-	print("PlayerID ",pID, "set to position",nPos)
-	self.vCurrentPos[pID] = nPos
+function Dmono:InsertPlayerID(playerID)
+    table.insert(self.pIDs, playerID)
 end
 
-function Dmono:GetAllPlayersID(pID)
-	local playerIDs = {}
-
-	for k,v in pairs(pID) do
-		table.insert(playerIDs,v)
+function Dmono:PrintID()
+	for i = 1, Utilities:TableSize(self.pIDs) do 
+		print(self.pIDs[i])
 	end
-	return playerIDs
-end
-
-function Dmono:CheckGamePause()
-	if GameRules:IsGamePaused() == true then
-		self.bStartTimer = false
+	print("----------------------------" .. Utilities:TableSize(self.pIDs) .. " " .. Utilities:TableSize(self.TurnsQueue))
+	for i = 1, Utilities:TableSize(self.TurnsQueue) do 
+		print(self.TurnsQueue[i])
 	end
-
-	if GameRules:IsGamePaused() == false then
-		self.bStartTimer = true
-	end
-
 end
 
-function Dmono:SetPlayerToJail(pID)
-	self.vPlayersInJail[pID+1] = pID
-	self.vRoundsInJail[pID+1] = 0
-end
+function Dmono:ShuffleQueue(pIDTable)
+	local shuffled = {}
 
-function Dmono:RemovePlayerFromJail(pID)
-	table.remove(self.vPlayersInJail, pID+1)
-	table.remove(self.vRoundsInJail, pID+1)
-end
+    for i = 0, Utilities:TableSize(pIDTable)  do shuffled[i] = pIDTable[i] end
 
-function Dmono:GetRoundsInJail(pID)
-	return self.vRoundsInJail[pID+1]
-end
-
-function Dmono:IncreaseRoundsInJail(pID)
-	self.vRoundsInJail[pID+1] = self.vRoundsInJail[pID+1] + 1
-end
-
-function Dmono:SetPreviousTurn(pID)
-	self.nPreviousTurn = pID
-end
-
-function Dmono:GetPreviousTurn()
-	return self.nPreviousTurn
-end
-
-function Dmono:SetNextPlayerTurn()
-	local curTurn = self.nCurrentTurn
-	local firstPlayer = -1 -- pID of the first player if everybody finished the round
-
-	-- Check who is going to be the first player
-	local i = 1
-	for k,v in pairs(self.vPlayerIDs) do
-		if self.vCurrentPos[i-1] ~= -1 then
-			firstPlayer = i - 1
-			break
-		end
-		i = i + 1
-	end
-
-	local i = self.nCurrentTurn
-	for k,v in pairs(self.vPlayerIDs) do
-		-- Table size has been reached, start from the first player that is in the game
-		if self.nCurrentTurn + 1 > Utilities:TableSize(self.vPlayerIDs) - 1 then
-			self.nCurrentTurn = firstPlayer
-			return
-		elseif self.vCurrentPos[i + 1] ~= -1 then
-			self.nCurrentTurn = i + 1
-			return
-		end
-		i = i + 1
-	end
-
-end
-
-function Dmono:NextPlayerTurn()
-	if Utilities:GetTimer() > 0 then
-		Utilities:SetTimer("Next Player", 0)
-	end
+    for i = Utilities:TableSize(shuffled), 2, -1 do
+        local j = RandomInt(1,i)
+        shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
+    end
+	
+	for i = 0, Utilities:TableSize(shuffled) do self.TurnsQueue[i] = shuffled[i] end
 end

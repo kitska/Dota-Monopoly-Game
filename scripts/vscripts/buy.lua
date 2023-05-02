@@ -1,4 +1,5 @@
 require('utilities')
+require('libraries/timers')
 Buy = class({})
 
 function Buy:OnSpellStart()
@@ -130,4 +131,5 @@ function Buy:OnSpellStart()
 	caster:RemoveAbility("Buy")
 	caster:RemoveAbility("None")
 	caster:AddAbility("Roll"):SetLevel(1)
+	Timers:RemoveTimer("turn_timer")
 end
