@@ -38,7 +38,6 @@ function Dmono:InitGameMode()
 	Dmono.TurnsQueue = {}
 	Dmono.PlayerNPCs = {}
 	Dmono.CurrentPlayerIndex = 1
-	Dmono:ShuffleQueue(self.pIDs)
 
 
 	self.m_TeamColors = {}
@@ -164,6 +163,11 @@ function Dmono:InitGameMode()
 		unit = Entities:FindByName(nil,("pay_tax_entity_"..i))
 		DressPayTaxer(unit)
 	end
+
+	local furion = Entities:FindByName(nil,("sector_15"))
+	local trent = Entities:FindByName(nil,("sector_16"))
+	DressFurionSector(furion)
+	DressTrentSector(trent)
 end
 
 function OnNPCSpawned(keys)
@@ -246,6 +250,90 @@ function DressPayTaxer( unit )
 	backModel:SetParent(unit, "attach_hitloc")
 	backModel:FollowEntity(unit, true)
 	
+end
+
+function DressFurionSector( furion )
+	local weaponModel = SpawnEntityFromTableSynchronous("prop_dynamic", {
+        model = "models/items/furion/allfather_of_nature_weapon/allfather_of_nature_weapon.vmdl",
+        origin = furion:GetAbsOrigin(),
+        scale = 1.0,
+    })
+    weaponModel:SetParent(furion, "attach_attack1")
+    weaponModel:FollowEntity(furion, true)
+
+    local shoulderModel = SpawnEntityFromTableSynchronous("prop_dynamic", {
+        model = "models/items/furion/allfather_of_nature_shoulder/allfather_of_nature_shoulder.vmdl",
+        origin = furion:GetAbsOrigin(),
+        scale = 1.0,
+    })
+    shoulderModel:SetParent(furion, "attach_shoulder")
+    shoulderModel:FollowEntity(furion, true)
+
+    local neckModel = SpawnEntityFromTableSynchronous("prop_dynamic", {
+        model = "models/items/furion/allfather_of_nature_neck/allfather_of_nature_neck.vmdl",
+        origin = furion:GetAbsOrigin(),
+        scale = 1.0,
+    })
+    neckModel:SetParent(furion, "attach_neck")
+    neckModel:FollowEntity(furion, true)
+
+    local headModel = SpawnEntityFromTableSynchronous("prop_dynamic", {
+        model = "models/items/furion/allfather_of_nature_head/allfather_of_nature_head.vmdl",
+        origin = furion:GetAbsOrigin(),
+        scale = 1.0,
+    })
+    headModel:SetParent(furion, "attach_head")
+    headModel:FollowEntity(furion, true)
+
+    local backModel = SpawnEntityFromTableSynchronous("prop_dynamic", {
+        model = "models/items/furion/allfather_of_nature_back/allfather_of_nature_back.vmdl",
+        origin = furion:GetAbsOrigin(),
+        scale = 1.0,
+    })
+    backModel:SetParent(furion, "attach_back")
+    backModel:FollowEntity(furion, true)
+
+    local armsModel = SpawnEntityFromTableSynchronous("prop_dynamic", {
+        model = "models/items/furion/allfather_of_nature_arms/allfather_of_nature_arms.vmdl",
+        origin = furion:GetAbsOrigin(),
+        scale = 1.0,
+    })
+    armsModel:SetParent(furion, "attach_armsgloves")
+    armsModel:FollowEntity(furion, true)
+end
+
+function DressTrentSector( trent )
+	local armsModel = SpawnEntityFromTableSynchronous("prop_dynamic", {
+		model = "models/items/treant/halloweentree_arms/halloweentree_arms.vmdl",
+		origin = trent:GetAbsOrigin(),
+		scale = 1.0,
+	})
+	armsModel:SetParent(trent, "attach_attack1")
+	armsModel:FollowEntity(trent, true)
+	
+	local headModel = SpawnEntityFromTableSynchronous("prop_dynamic", {
+		model = "models/items/treant/halloweentree_head/halloweentree_head.vmdl",
+		origin = trent:GetAbsOrigin(),
+		scale = 1.0,
+	})
+	headModel:SetParent(trent, "attach_head")
+	headModel:FollowEntity(trent, true)
+	
+	local legsModel = SpawnEntityFromTableSynchronous("prop_dynamic", {
+		model = "models/items/treant/halloweentree_legs/halloweentree_legs.vmdl",
+		origin = trent:GetAbsOrigin(),
+		scale = 1.0,
+	})
+	legsModel:SetParent(trent, "attach_feet")
+	legsModel:FollowEntity(trent, true)
+	
+	local shoulderModel = SpawnEntityFromTableSynchronous("prop_dynamic", {
+		model = "models/items/treant/halloweentree_shoulder/halloweentree_shoulder.vmdl",
+		origin = trent:GetAbsOrigin(),
+		scale = 1.0,
+	})
+	shoulderModel:SetParent(trent, "attach_attack2")
+	shoulderModel:FollowEntity(trent, true)
 end
 
 function Dmono:OnPlaeyrChat(keys)
