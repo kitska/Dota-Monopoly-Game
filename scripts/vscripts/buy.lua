@@ -9,14 +9,13 @@ function Buy:OnSpellStart()
 	local playerName = PlayerResource:GetPlayerName(pID)
 	local pos = caster:GetOrigin()
 	local cost = 0
-	local fakePos = Dmono:GetFakePos()
-	Dmono:IncrimentOfBoughts()
+	local fakePos = Dmono:GetFakePos(pID)
 	local sectorsbought = Dmono:GetBoughtSectors()
 
 	local units = FindUnitsInRadius(caster:GetTeamNumber(), caster:GetAbsOrigin(), nil, 300, DOTA_UNIT_TARGET_TEAM_BOTH, DOTA_UNIT_TARGET_HERO, DOTA_UNIT_TARGET_FLAG_NONE, FIND_ANY_ORDER, false)
 	local amountUnits = Utilities:TableSize(units)
 
-	if pos == Vector(-1856, -1421.731445, 186) or pos == Vector(-1664, -1408, 186) or pos == Vector(-1664, -1719.28, 186) or pos == Vector(-1856, -1728, 186) then
+	if pos == Vector(-1856, -1421.731445, 128) or pos == Vector(-1664, -1408, 128) or pos == Vector(-1664, -1719.28, 128) or pos == Vector(-1856, -1728, 128) then
 		pos = caster:GetOrigin()
 	elseif pos ~= fakePos then
 		pos = fakePos
@@ -103,8 +102,8 @@ function Buy:OnSpellStart()
 		cost = 400
 	end
 
-	local sectors = Entities:FindByName(nil,("sector_trigger_"..index))
-	local visible_sectors = Entities:FindByName(nil,("sec_"..index.."_visible"))
+	local sectors = Entities:FindByName(nil, ("sector_trigger_"..index))
+	local visible_sectors = Entities:FindByName(nil, ("sec_"..index.."_visible"))
 	local teamID = PlayerResource:GetTeam(pID)
 	print(teamID.." sector was bougnt "..index)
 	print("sectors "..sectorsbought)
@@ -131,4 +130,5 @@ function Buy:OnSpellStart()
 	caster:RemoveAbility("Buy")
 	caster:RemoveAbility("None")
 	caster:AddAbility("Roll"):SetLevel(1)
+	Dmono:SetNewTurn()
 end

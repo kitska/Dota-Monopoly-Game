@@ -9,7 +9,7 @@ function Roll:OnSpellStart()
 	local teamID = PlayerResource:GetTeam(pID)
 	local overallrand = 2
 	local casterPos = caster:GetOrigin()
-	local fakePos = Dmono:GetFakePos()
+	local fakePos = Dmono:GetFakePos(pID)
 	print( rand1 .. " rand1" )
 	print( rand2 .. " rand2" )
 	print("teamID "..teamID)
@@ -21,7 +21,7 @@ function Roll:OnSpellStart()
 	print(Dmono:GetCountPlayers())
 	for i = 1, 40 do
 		
-		if casterPos == Vector(-1856, -1421.731445, 186) or casterPos == Vector(-1664, -1408, 186) or casterPos == Vector(-1664, -1719.28, 186) or casterPos == Vector(-1856, -1728, 186) then
+		if casterPos == Vector(-1856, -1421.731445, 128) or casterPos == Vector(-1664, -1408, 128) or casterPos == Vector(-1664, -1719.28, 128) or casterPos == Vector(-1856, -1728, 128) then
 			casterPos = caster:GetOrigin()
 		elseif casterPos ~= fakePos then
 			casterPos = fakePos
@@ -30,7 +30,7 @@ function Roll:OnSpellStart()
 
 		if casterPos == Dmono:GetSectorPos(i) and (overallrand + i) > 40 then
 			FindClearSpaceForUnit(caster, Dmono:GetSectorPos(overallrand + i - 40), true)
-			Dmono:SetFakePos(Dmono:GetSectorPos(overallrand + i - 40))
+			Dmono:SetFakePos(pID, Dmono:GetSectorPos(overallrand + i - 40))
 			if Dmono:GetSectorPos(overallrand + i - 40) == Dmono:GetSectorPos(1) then
 				return
 			else
@@ -41,11 +41,11 @@ function Roll:OnSpellStart()
 		
 		if casterPos == Dmono:GetSectorPos(i) then
 			FindClearSpaceForUnit(caster, Dmono:GetSectorPos(overallrand+i), true)
-			Dmono:SetFakePos(Dmono:GetSectorPos(overallrand+i))
+			Dmono:SetFakePos(pID, Dmono:GetSectorPos(overallrand+i))
 			return
-		elseif casterPos == Vector(-1856, -1421.731445, 186) or casterPos == Vector(-1664, -1408, 186) or casterPos == Vector(-1664, -1719.28, 186) or casterPos == Vector(-1856, -1728, 186) then
+		elseif casterPos == Vector(-1856, -1421.731445, 128) or casterPos == Vector(-1664, -1408, 128) or casterPos == Vector(-1664, -1719.28, 128) or casterPos == Vector(-1856, -1728, 128) then
 			FindClearSpaceForUnit(caster, Dmono:GetSectorPos(overallrand+1), true)
-			Dmono:SetFakePos(Dmono:GetSectorPos(overallrand+1))
+			Dmono:SetFakePos(pID, Dmono:GetSectorPos(overallrand+1))
 			return
 		end
 	end

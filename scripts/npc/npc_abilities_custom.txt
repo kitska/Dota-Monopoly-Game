@@ -8,7 +8,7 @@
 		"BaseClass"						"ability_lua"
 		"ScriptFile"					"roll.lua"
 		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
-		"AbilityTextureName"			"roll_icon_128"
+		"AbilityTextureName"			"dice_icon"
 		"MaxLevel"						"1"
 	}
 
@@ -18,7 +18,7 @@
 		"ScriptFile"					"buy.lua"
 		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
 		"MaxLevel"						"1"
-		"AbilityTextureName"			"alchemist_goblins_greed"
+		"AbilityTextureName"			"buy_icon"
 
 	}
 
@@ -28,34 +28,7 @@
 		"ScriptFile"				"none.lua"
 		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
 		"MaxLevel"					"1"
-		"AbilityTextureName"		"none"
-	}
-
-	"None1"
-	{
-		"BaseClass"					"ability_datadriven"
-		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
-		"AbilityUnitDamageType"		"DAMAGE_TYPE_NONE"
-		"MaxLevel"					"1"
-		"AbilityTextureName"		"none"
-	}
-
-	"None2"
-	{
-		"BaseClass"					"ability_datadriven"
-		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
-		"AbilityUnitDamageType"		"DAMAGE_TYPE_NONE"
-		"MaxLevel"					"1"
-		"AbilityTextureName"		"none"
-	}
-
-	"None3"
-	{
-		"BaseClass"					"ability_datadriven"
-		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
-		"AbilityUnitDamageType"		"DAMAGE_TYPE_NONE"
-		"MaxLevel"					"1"
-		"AbilityTextureName"		"none"
+		"AbilityTextureName"		"none_icon"
 	}
 
 	"Pay_tax"
@@ -84,5 +57,24 @@
     	    "damage"           "0"
     	  }
     	}
+	}
+
+	
+	"Jail_Roll"
+	{
+		"BaseClass"						"ability_lua"
+		"ScriptFile"					"jail_roll.lua"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityTextureName"			"jail_dice_icon"
+		"MaxLevel"						"1"
+	}
+
+	"Pay_Jail"
+	{
+		"BaseClass"						"ability_lua"
+		"ScriptFile"					"pay_jail.lua"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityTextureName"			"jail_buyback_icon"
+		"MaxLevel"						"1"
 	}
 }

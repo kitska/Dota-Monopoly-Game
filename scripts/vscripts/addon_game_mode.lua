@@ -32,13 +32,15 @@ function Dmono:InitGameMode()
 	Dmono.RollCount = 0
 	
 	Dmono.BougntSectors = 0
-	Dmono.FakePos = Vector(0,0,0)
+	Dmono.FakePos = {}
 	Dmono.TeamSectorValues = {}
 	Dmono.pIDs = {}
 	Dmono.TurnsQueue = {}
 	Dmono.PlayerNPCs = {}
 	Dmono.CurrentPlayerIndex = 1
-
+	Dmono.TurnFlag = false
+	Dmono.JailTable = {}
+	Dmono.JailDiceCounter = 0
 
 	self.m_TeamColors = {}
 	self.m_TeamColors[DOTA_TEAM_GOODGUYS] = { 61, 210, 150 }	--		Teal
@@ -48,73 +50,75 @@ function Dmono:InitGameMode()
 
 	Dmono.priceSectorIndex = {}
 	self.priceSectorIndex[1] = 60
-	self.priceSectorIndex[3] = 60
-	self.priceSectorIndex[5] = 200
-	self.priceSectorIndex[6] = 100
-	self.priceSectorIndex[8] = 100
-	self.priceSectorIndex[9] = 120
-	self.priceSectorIndex[10] = 140
-	self.priceSectorIndex[12] = 140
-	self.priceSectorIndex[13] = 160
-	self.priceSectorIndex[14] = 200
-	self.priceSectorIndex[15] = 180
-	self.priceSectorIndex[17] = 180
-	self.priceSectorIndex[18] = 200
-	self.priceSectorIndex[19] = 220
-	self.priceSectorIndex[21] = 220
-	self.priceSectorIndex[22] = 240
-	self.priceSectorIndex[23] = 200
-	self.priceSectorIndex[24] = 260
-	self.priceSectorIndex[25] = 260
-	self.priceSectorIndex[27] = 280
-	self.priceSectorIndex[28] = 300
-	self.priceSectorIndex[29] = 300
-	self.priceSectorIndex[31] = 320
-	self.priceSectorIndex[32] = 200
-	self.priceSectorIndex[34] = 350
-	self.priceSectorIndex[36] = 400
+	self.priceSectorIndex[2] = 60
+	self.priceSectorIndex[3] = 200
+	self.priceSectorIndex[4] = 100
+	self.priceSectorIndex[5] = 100
+	self.priceSectorIndex[6] = 120
+	self.priceSectorIndex[7] = 140
+	self.priceSectorIndex[8] = 140
+	self.priceSectorIndex[9] = 160
+	self.priceSectorIndex[10] = 200
+	self.priceSectorIndex[11] = 180
+	self.priceSectorIndex[12] = 180
+	self.priceSectorIndex[13] = 200
+	self.priceSectorIndex[14] = 220
+	self.priceSectorIndex[15] = 220
+	self.priceSectorIndex[16] = 240
+	self.priceSectorIndex[17] = 200
+	self.priceSectorIndex[18] = 260
+	self.priceSectorIndex[19] = 260
+	self.priceSectorIndex[20] = 280
+	self.priceSectorIndex[21] = 300
+	self.priceSectorIndex[22] = 300
+	self.priceSectorIndex[23] = 320
+	self.priceSectorIndex[24] = 200
+	self.priceSectorIndex[25] = 350
+	self.priceSectorIndex[26] = 400
 	
+	Dmono.JailCoords = Vector(-2048, 1856, 128)
+
 	Dmono.places = {
-		Vector(-1732.92, -1565.54, 186),
-		Vector(-1575.39, -1129.84, 186),
-		Vector(-1575.39, -839.384, 186),
-		Vector(-1575.39, -548.923, 186),
-		Vector(-1575.39, -258.462, 186),
-		Vector(-1575.39, 32.0001, 186),
-		Vector(-1575.39, 322.462, 186),
-		Vector(-1575.39, 612.923, 186),
-		Vector(-1575.39, 903.385, 186),
-		Vector(-1575.39, 1193.85, 186),
-		Vector(-1732.92, 1629.54, 186),
-		Vector(-1260.31, 1484.31, 186),
-		Vector(-945.231, 1484.31, 186),
-		Vector(-630.154, 1484.31, 186),
-		Vector(-315.077, 1484.31, 186),
-		Vector(-0.000305176, 1484.31, 186),
-		Vector(315.077, 1484.31, 186),
-		Vector(630.154, 1484.31, 186),
-		Vector(945.231, 1484.31, 186),
-		Vector(1260.31, 1484.31, 186),
-		Vector(1732.92, 1629.54, 186),
-		Vector(1575.38, 1193.85, 186),
-		Vector(1575.38, 903.385, 186),
-		Vector(1575.38, 612.923, 186),
-		Vector(1575.38, 322.462, 186),
-		Vector(1575.38, 32.0001, 186),
-		Vector(1575.38, -258.462, 186),
-		Vector(1575.38, -548.923, 186),
-		Vector(1575.38, -839.384, 186),
-		Vector(1575.38, -1129.85, 186),
-		Vector(1732.92, -1565.54, 186),
-		Vector(1260.31, -1420.31, 186),
-		Vector(945.231, -1420.31, 186),
-		Vector(630.154, -1420.31, 186),
-		Vector(315.077, -1420.31, 186),
-		Vector(-0.000305176, -1420.31, 186),
-		Vector(-315.077, -1420.31, 186),
-		Vector(-630.154, -1420.31, 186),
-		Vector(-945.231, -1420.31, 186),
-		Vector(-1260.31, -1420.31, 186)
+		Vector(-1732.92, -1565.54, 128),
+		Vector(-1575.39, -1129.84, 128),
+		Vector(-1575.39, -839.384, 128),
+		Vector(-1575.39, -548.923, 128),
+		Vector(-1575.39, -258.462, 128),
+		Vector(-1575.39, 32.0001, 128),
+		Vector(-1575.39, 322.462, 128),
+		Vector(-1575.39, 612.923, 128),
+		Vector(-1575.39, 903.385, 128),
+		Vector(-1575.39, 1193.85, 128),
+		Vector(-1732.92, 1629.54, 128),
+		Vector(-1260.31, 1484.31, 128),
+		Vector(-945.231, 1484.31, 128),
+		Vector(-630.154, 1484.31, 128),
+		Vector(-315.077, 1484.31, 128),
+		Vector(-0.000305176, 1484.31, 128),
+		Vector(315.077, 1484.31, 128),
+		Vector(630.154, 1484.31, 128),
+		Vector(945.231, 1484.31, 128),
+		Vector(1260.31, 1484.31, 128),
+		Vector(1732.92, 1629.54, 128),
+		Vector(1575.38, 1193.85, 128),
+		Vector(1575.38, 903.385, 128),
+		Vector(1575.38, 612.923, 128),
+		Vector(1575.38, 322.462, 128),
+		Vector(1575.38, 32.0001, 128),
+		Vector(1575.38, -258.462, 128),
+		Vector(1575.38, -548.923, 128),
+		Vector(1575.38, -839.384, 128),
+		Vector(1575.38, -1129.85, 128),
+		Vector(1732.92, -1565.54, 128),
+		Vector(1260.31, -1420.31, 128),
+		Vector(945.231, -1420.31, 128),
+		Vector(630.154, -1420.31, 128),
+		Vector(315.077, -1420.31, 128),
+		Vector(-0.000305176, -1420.31, 128),
+		Vector(-315.077, -1420.31, 128),
+		Vector(-630.154, -1420.31, 128),
+		Vector(-945.231, -1420.31, 128),
+		Vector(-1260.31, -1420.31, 128)
 	}
 
 	for team = 0, (DOTA_TEAM_COUNT-1) do
@@ -128,7 +132,7 @@ function Dmono:InitGameMode()
 	GameRules:SetGoldTickTime(0)
 	GameRules:SetPreGameTime(10)
 	GameRules:SetPostGameTime(10)
-	GameRules:SetStartingGold(1000)
+	GameRules:SetStartingGold(1500)
 	GameRules:SetTreeRegrowTime(1)
 
 	GameRules:SetShowcaseTime(0)
@@ -168,12 +172,17 @@ function Dmono:InitGameMode()
 	local trent = Entities:FindByName(nil,("sector_16"))
 	DressFurionSector(furion)
 	DressTrentSector(trent)
+	
 end
 
 function OnNPCSpawned(keys)
     local npc = EntIndexToHScript(keys.entindex)
+
+	
+	if npc:GetClassname() == "npc_dota_creature" then
+		npc:AddNewModifier(nil, nil, "modifier_invulnerable", {})
+	end
     if npc:IsRealHero() then
-      local duration = 2
       local modifier = npc:AddNewModifier(nil, nil, "modifier_stunned", {duration = -1})
 	  local modifier2 = npc:AddNewModifier(nil, nil, "modifier_silence", {duration = -1})
     end
@@ -363,12 +372,52 @@ function Dmono:GetValueFromNPC(index)
 end
 
 function Dmono:OnThink()
+	Dmono:ParticleToSectors()
 	return 1
+end
+
+function Dmono:ParticleToSectors()
+	local sectorUnit
+	local digitsCount
+
+	for i = 1, 26 do
+		if i == 3 then
+			sectorUnit = Entities:FindByName(nil,("sector_station_1"))
+		elseif i == 10 then
+			sectorUnit = Entities:FindByName(nil,("sector_station_2"))
+		elseif i == 17 then
+			sectorUnit = Entities:FindByName(nil,("sector_station_3"))
+		elseif i == 24 then
+			sectorUnit = Entities:FindByName(nil,("sector_station_4"))
+		else
+			sectorUnit = Entities:FindByName(nil,("sector_"..i))
+		end
+		digitsCount = string.len(tostring(Dmono.priceSectorIndex[i]))
+		local particle = ParticleManager:CreateParticle("particles/msg_fx/msg_goldbounty.vpcf", PATTACH_OVERHEAD_FOLLOW, sectorUnit )
+		ParticleManager:SetParticleControl(particle, 0, sectorUnit:GetAbsOrigin())
+		ParticleManager:SetParticleControl(particle, 1, Vector(0, Dmono.priceSectorIndex[i], 0))
+		ParticleManager:SetParticleControl(particle, 2, Vector(2.0, digitsCount, 0))
+		ParticleManager:SetParticleControl(particle, 3, Vector(255, 200, 33))
+	end
 end
 
 function Dmono:HandleTurn()
 	local QueueTurns = self.TurnsQueue[self.CurrentPlayerIndex] + 1
+	local jailCondition = self.TurnsQueue[self.CurrentPlayerIndex]
 	local playerHero = Dmono:GetValueFromNPC(QueueTurns)
+	local prevIndex = QueueTurns - 1
+	local prevPlayerHero = Dmono:GetValueFromNPC(prevIndex)
+	if self.TurnFlag and prevPlayerHero == nil then
+		prevPlayerHero = Dmono:GetValueFromNPC(self.PlayerCount)
+		prevPlayerHero:AddNewModifier(nil, nil, "modifier_stunned", {duration = -1})
+		prevPlayerHero:AddNewModifier(nil, nil, "modifier_silence", {duration = -1})
+		self.TurnFlag = false
+		print("turn flag activated")
+	end
+	print(Dmono:GetJailStatus(jailCondition))
+	if Dmono:GetJailStatus(jailCondition) == 0 then
+		playerHero:RemoveAbility("Jail_Roll")
+	end
 	if playerHero ~= nil then
 		playerHero:RemoveModifierByName("modifier_stunned")
 		playerHero:RemoveModifierByName("modifier_silence")
@@ -377,7 +426,7 @@ function Dmono:HandleTurn()
 		print("turn" .. QueueTurns)
 		print("Player with ID 0 has no hero registered in the game.")
 	end
-    Timers:CreateTimer("turn_timer", {
+	local timerHandle = Timers:CreateTimer("turn_timer", {
     	endTime = 45,
     	callback = function()
 			playerHero:AddNewModifier(nil, nil, "modifier_stunned", {duration = -1})
@@ -390,6 +439,7 @@ function Dmono:HandleTurn()
 			self:HandleTurn()
     	end
    	})
+	self.currentTurnTimerHandle = timerHandle
 end
 
 function Dmono:ColorForTeam( teamID )
@@ -400,6 +450,26 @@ function Dmono:ColorForTeam( teamID )
 	return color
 end
 
+function Dmono:SetNewTurn()
+	self.TurnFlag = true
+	if self.currentTurnTimerHandle ~= nil then
+		Timers:RemoveTimer(self.currentTurnTimerHandle)
+	end
+	self.CurrentPlayerIndex = self.CurrentPlayerIndex + 1
+	if self.PlayerCount < self.CurrentPlayerIndex then
+		self.CurrentPlayerIndex = 1
+	end
+	Say(nil, "turn changed", false)
+	self:HandleTurn()
+end
+
+function Dmono:PutInJail(CurrentPlayerIndex)
+	self.JailTable[CurrentPlayerIndex] = true
+end
+
+function Dmono:GetJailCoords()
+	return self.JailCoords
+end
 
 function Dmono:GetSectorPos( index )
 	return self.places[index]
@@ -419,12 +489,12 @@ function Dmono:MakeTeamLose(teamID)
 	return
 end
 
-function Dmono:GetFakePos()
-	return self.FakePos
+function Dmono:GetFakePos(playerID)
+	return self.FakePos[playerID]
 end
 
-function Dmono:SetFakePos(pos)
-	self.FakePos = pos
+function Dmono:SetFakePos(playerID, pos)
+	self.FakePos[playerID] = pos
 end
 
 function Dmono:IncrimentOfRolls()
@@ -445,6 +515,18 @@ end
 
 function Dmono:InsertPlayerID(playerID)
     table.insert(self.pIDs, playerID)
+end
+
+function Dmono:InsertJail(playerID, amountOfTurns)
+	self.JailTable[playerID] = amountOfTurns
+end
+
+function Dmono:GetJailStatus(playerID)
+	return self.JailTable[playerID]
+end
+
+function Dmono:DecrementJailCount(playerID)
+	self.JailTable[playerID] = self.JailTable[playerID] - 1
 end
 
 function Dmono:PrintID()

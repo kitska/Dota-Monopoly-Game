@@ -19,6 +19,11 @@ function angleChangeForFours( event )
 	player:SetAngles(0,180,0)
 end
 
+function angleChangeForJail( event )
+	player = event.activator
+	player:SetAngles(0,330,0)
+end
+
 function startTrigger( event )
 	player = event.activator
 	player:ModifyGold(200, false, 0)
@@ -26,13 +31,13 @@ end
 
 function changeAbility( event )
 	player = event.activator
-
+	local pID = player:GetPlayerID()
 	local pos = player:GetOrigin()
-	local fakePos = Dmono:GetFakePos()
+	local fakePos = Dmono:GetFakePos(pID)
 	local cost = 0
 	local index = 0
 
-	if pos == Vector(-1856, -1421.731445, 186) or pos == Vector(-1664, -1408, 186) or pos == Vector(-1664, -1719.28, 186) or pos == Vector(-1856, -1728, 186) then
+	if pos == Vector(-1856, -1421.731445, 128) or pos == Vector(-1664, -1408, 128) or pos == Vector(-1664, -1719.28, 128) or pos == Vector(-1856, -1728, 128) then
 		pos = caster:GetOrigin()
 	elseif pos ~= fakePos then
 		pos = fakePos
@@ -153,7 +158,7 @@ function changeAbility( event )
 	end
 end
 
-function OnFirstSpawn(event)
+function OnFirstSpawn( event )
 	player = event.activator
 	player:RemoveAbility("None")
 	player:RemoveAbility("Roll")
@@ -163,11 +168,12 @@ end
 
 function OnPayTaxSector( event )
 	player = event.activator
+	local pID = player:GetPlayerID()
 	local index = 0
 	local pos = player:GetOrigin()
-	local fakePos = Dmono:GetFakePos()
+	local fakePos = Dmono:GetFakePos(pID)
 
-	if pos == Vector(-1856, -1421.731445, 186) or pos == Vector(-1664, -1408, 186) or pos == Vector(-1664, -1719.28, 186) or pos == Vector(-1856, -1728, 186) then
+	if pos == Vector(-1856, -1421.731445, 128) or pos == Vector(-1664, -1408, 128) or pos == Vector(-1664, -1719.28, 128) or pos == Vector(-1856, -1728, 128) then
 		pos = caster:GetOrigin()
 	elseif pos ~= fakePos then
 		pos = fakePos
@@ -197,4 +203,36 @@ function OnPayTaxSector( event )
 			end
 		})
     end
+	Dmono:SetNewTurn()
+end
+
+function OnChestSector( event )
+	player = event.activator
+	Dmono:SetNewTurn()
+end
+
+function OnChanceSector( event )
+	player = event.activator
+	Dmono:SetNewTurn()
+end
+
+function OnVisitJailSector( event )
+	player = event.activator
+	Dmono:SetNewTurn()
+end
+
+function JailTrigger( event )
+	player = event.activator
+	playerID = player:GetPlayerID()
+	Dmono:InsertJail(playerID, 3)
+	local JailCoords = Dmono:GetJailCoords()
+	FindClearSpaceForUnit(player, JailCoords, true)
+	Dmono:SetNewTurn()
+end
+
+function InJailTrigger( event )
+	player = event.activator
+	player:RemoveAbility("Roll")
+	player:AddAbility("Jail_Roll"):SetLevel(1)
+	player:AddAbility("Pay_Jail"):SetLevel(1)
 end

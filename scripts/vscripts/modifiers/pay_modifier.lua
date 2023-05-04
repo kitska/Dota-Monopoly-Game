@@ -33,10 +33,11 @@ function pay_modifier:OnAttackLanded(params)
 
   local caster = params.attacker
   local target = params.target
+  local pID = target:GetPlayerID()
   local ability = self:GetAbility()
   local cost = 0
   local pos = target:GetAbsOrigin()
-  local fakePos = Dmono:GetFakePos()
+  local fakePos = Dmono:GetFakePos(pID)
 
   if pos == Vector(-1856, -1421.731445, 186) or pos == Vector(-1664, -1408, 186) or pos == Vector(-1664, -1719.28, 186) or pos == Vector(-1856, -1728, 186) then
 		pos = target:GetAbsOrigin()
@@ -55,6 +56,8 @@ function pay_modifier:OnAttackLanded(params)
 		cost = 100
 	end
 
+  local digitsCount = string.len(tostring(cost))
+
   if caster == self:GetCaster() then
       target:ModifyGold(cost * -1, false, 0)
       ApplyDamage({
@@ -67,6 +70,11 @@ function pay_modifier:OnAttackLanded(params)
       self.particle = ParticleManager:CreateParticle("particles/econ/items/bounty_hunter/bounty_hunter_ti9_immortal/bh_ti9_immortal_jinada.vpcf", PATTACH_ABSORIGIN_FOLLOW, self.parent)
       self:AddParticle(self.particle, false, false, -1, false, false)
       ParticleManager:DestroyParticle(self.particle, false)
+      local particle = ParticleManager:CreateParticle("particles/msg_fx/msg_goldbounty.vpcf", PATTACH_OVERHEAD_FOLLOW, caster )
+		  ParticleManager:SetParticleControl(particle, 0, caster:GetAbsOrigin())
+		  ParticleManager:SetParticleControl(particle, 1, Vector(0, cost, 0))
+		  ParticleManager:SetParticleControl(particle, 2, Vector(2.0, digitsCount, 0))
+		  ParticleManager:SetParticleControl(particle, 3, Vector(255, 200, 33))
   end
 end
 
