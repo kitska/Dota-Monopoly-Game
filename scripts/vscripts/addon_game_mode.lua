@@ -34,47 +34,40 @@ function Dmono:InitGameMode()
 	Dmono.BougntSectors = 0
 	Dmono.FakePos = {}
 	Dmono.TeamSectorValues = {}
+
 	Dmono.pIDs = {}
 	Dmono.TurnsQueue = {}
 	Dmono.PlayerNPCs = {}
 	Dmono.CurrentPlayerIndex = 1
 	Dmono.TurnFlag = false
+
 	Dmono.JailTable = {}
 	Dmono.JailDiceCounter = 0
+
+	Dmono.SectorStatusBought = {}
+	Dmono.SectorRentTable = {}
+	Dmono.SectorStatusUpgradeTable = {}
+	Dmono.SectorUpgradePriceTable = {}
+	Dmono.PriceSectorIndex = {}
+	Dmono.SectorMortgageTable = {}
+
+	Dmono.Upgrade1RentCost = {}
+	Dmono.Upgrade2RentCost = {}
+	Dmono.Upgrade3RentCost = {}
+	Dmono.Upgrade4RentCost = {}
+	Dmono.UpgradeFinaleRentCost = {}
+
+	Dmono.StationTable = {}
+	Dmono.UtilityTable = {}
+
+	Dmono.Rand1ForUtility = 0
+	Dmono.Rand2ForUtility = 0
 
 	self.m_TeamColors = {}
 	self.m_TeamColors[DOTA_TEAM_GOODGUYS] = { 61, 210, 150 }	--		Teal
 	self.m_TeamColors[DOTA_TEAM_BADGUYS]  = { 243, 201, 9 }		--		Yellow
 	self.m_TeamColors[DOTA_TEAM_CUSTOM_1] = { 197, 77, 168 }	--      Pink
 	self.m_TeamColors[DOTA_TEAM_CUSTOM_2] = { 255, 108, 0 }		--		Orange
-
-	Dmono.priceSectorIndex = {}
-	self.priceSectorIndex[1] = 60
-	self.priceSectorIndex[2] = 60
-	self.priceSectorIndex[3] = 200
-	self.priceSectorIndex[4] = 100
-	self.priceSectorIndex[5] = 100
-	self.priceSectorIndex[6] = 120
-	self.priceSectorIndex[7] = 140
-	self.priceSectorIndex[8] = 140
-	self.priceSectorIndex[9] = 160
-	self.priceSectorIndex[10] = 200
-	self.priceSectorIndex[11] = 180
-	self.priceSectorIndex[12] = 180
-	self.priceSectorIndex[13] = 200
-	self.priceSectorIndex[14] = 220
-	self.priceSectorIndex[15] = 220
-	self.priceSectorIndex[16] = 240
-	self.priceSectorIndex[17] = 200
-	self.priceSectorIndex[18] = 260
-	self.priceSectorIndex[19] = 260
-	self.priceSectorIndex[20] = 280
-	self.priceSectorIndex[21] = 300
-	self.priceSectorIndex[22] = 300
-	self.priceSectorIndex[23] = 320
-	self.priceSectorIndex[24] = 200
-	self.priceSectorIndex[25] = 350
-	self.priceSectorIndex[26] = 400
 	
 	Dmono.JailCoords = Vector(-2048, 1856, 128)
 
@@ -159,29 +152,141 @@ function Dmono:InitGameMode()
 	GameMode:SetBuybackEnabled(false)
 	GameMode:SetDaynightCycleDisabled(false)
 	GameRules:GetGameModeEntity():SetThink("OnThink", self, "GlobalThink", 2)
+	ListenToGameEvent("npc_spawned", OnNPCSpawned, nil)
 
-	ListenToGameEvent('npc_spawned', OnNPCSpawned, nil)
-
-	local unit
-	for i = 1, 4 do
-		unit = Entities:FindByName(nil,("pay_tax_entity_"..i))
-		DressPayTaxer(unit)
-	end
-
-	local furion = Entities:FindByName(nil,("sector_15"))
-	local trent = Entities:FindByName(nil,("sector_16"))
+	local paytax1 = Entities:FindByName(nil,("pay_tax_entity_1"))
+	local paytax2 = Entities:FindByName(nil,("pay_tax_entity_4"))
+	DressPayTaxer(paytax1)
+	DressPayTaxer(paytax2)
+	local furion = Entities:FindByName(nil,("sector_16"))
+	local trent = Entities:FindByName(nil,("sector_17"))
 	DressFurionSector(furion)
 	DressTrentSector(trent)
-	
+	local morphling = Entities:FindByName(nil,("sector_utility_2"))
+	DressMorphSector(morphling)
+
+	self:LoadAllKV()
+	self:FromKVToTables()
+end
+
+function Dmono:SetRandForUtility(rand1, rand2)
+	Dmono.Rand1ForUtility = rand1
+	Dmono.Rand2ForUtility = rand2
+end
+
+function Dmono:GetRand1ForUtility()
+	return Dmono.Rand1ForUtility
+end
+
+function Dmono:GetRand2ForUtility()
+	return Dmono.Rand2ForUtility
+end
+
+function Dmono:GetStationTable(playerID)
+	return self.StationTable[playerID]
+end
+
+function Dmono:SetStationTable(playerID, count)
+	self.StationTable[playerID] = count
+end
+
+function Dmono:IncrementStationTable(playerID)
+	self.StationTable[playerID] = self.StationTable[playerID] + 1
+end
+
+function Dmono:GetUtilityTable(playerID)
+	return self.UtilityTable[playerID]
+end
+
+function Dmono:SetUtilityTable(playerID, count)
+	self.UtilityTable[playerID] = count
+end
+
+function Dmono:IncrementUtilityTable(playerID)
+	self.UtilityTable[playerID] = self.UtilityTable[playerID] + 1
+end
+
+function Dmono:GetFromSectorStatusBought(index)
+	return self.SectorStatusBought[index]
+end
+
+function Dmono:GetFromSectorRentTable(index)
+	return self.SectorRentTable[index]
+end
+
+function Dmono:GetFromSectorStatusUpgradeTable(index)
+	return self.SectorStatusUpgradeTable[index]
+end
+
+function Dmono:GetFromSectorUpgradePriceTable(index)
+	return self.SectorUpgradePriceTable[index]
+end
+
+function Dmono:GetFromPriceSectorIndex(index)
+	return self.PriceSectorIndex[index]
+end
+
+function Dmono:GetFromSectorMortgageTable(index)
+	return self.SectorMortgageTable[index]
+end
+
+function Dmono:UpdateFromSectorStatusBought(index, value)
+	self.SectorStatusBought[index] = value
+end
+
+function Dmono:UpdateFromSectorRentTable(index, value)
+	self.SectorRentTable[index] = value
+end
+
+function Dmono:UpdateFromSectorStatusUpgradeTable(index, value)
+	self.SectorStatusUpgradeTable[index] = value
+end
+
+function Dmono:UpdateFromSectorUpgradePriceTable(index, value)
+	self.SectorUpgradePriceTable[index] = value
+end
+
+function Dmono:UpdateFromPriceSectorIndex(index, value)
+	self.PriceSectorIndex[index] = value
+end
+
+function Dmono:UpdateFromSectorMortgageTable(index, value)
+	self.SectorMortgageTable[index] = value
+end
+
+function Dmono:LoadAllKV()
+	print("Loading all KVs")
+	GameRules.kvSector = LoadKeyValues("scripts/KV/sectors.kv")
+end
+
+function Dmono:FromKVToTables()
+	local sectorKV = GameRules.kvSector
+	local numCounter = 1
+
+	repeat
+		for k,v in pairs(sectorKV) do
+			local sector = sectorKV[k]
+			if tonumber(sector.Number) == numCounter then
+				Dmono:FillSectorsTables(Dmono.SectorStatusBought, 0)
+				Dmono:FillSectorsTables(Dmono.SectorRentTable, sector.Rent)
+				Dmono:FillSectorsTables(Dmono.SectorStatusUpgradeTable, "NoUpgrade")
+				Dmono:FillSectorsTables(Dmono.SectorUpgradePriceTable, sector.UpgradeCost)
+				Dmono:FillSectorsTables(Dmono.PriceSectorIndex, sector.Price)
+				Dmono:FillSectorsTables(Dmono.SectorMortgageTable, sector.Mortgage)
+
+				Dmono:FillSectorsTables(Dmono.Upgrade1RentCost, sector.Upgrade1)
+				Dmono:FillSectorsTables(Dmono.Upgrade2RentCost, sector.Upgrade2)
+				Dmono:FillSectorsTables(Dmono.Upgrade3RentCost, sector.Upgrade3)
+				Dmono:FillSectorsTables(Dmono.Upgrade4RentCost, sector.Upgrade4)
+				Dmono:FillSectorsTables(Dmono.UpgradeFinaleRentCost, sector.FinalUpgrade)
+				numCounter = numCounter + 1
+			end
+		end
+	until numCounter > 28
 end
 
 function OnNPCSpawned(keys)
     local npc = EntIndexToHScript(keys.entindex)
-
-	
-	if npc:GetClassname() == "npc_dota_creature" then
-		npc:AddNewModifier(nil, nil, "modifier_invulnerable", {})
-	end
     if npc:IsRealHero() then
       local modifier = npc:AddNewModifier(nil, nil, "modifier_stunned", {duration = -1})
 	  local modifier2 = npc:AddNewModifier(nil, nil, "modifier_silence", {duration = -1})
@@ -209,10 +314,108 @@ function OnNPCSpawned(keys)
 		Dmono.TurnsQueue = {0}
 	end
 	Dmono:InsertNPC(npc)
-	Dmono:PrintNPC()
-	Dmono:PrintID()
-	print(Dmono:GetCountPlayers() .. " count")
 	Dmono:HandleTurn()
+
+	-- print("-------------------------------------------------------------------")
+	-- for i = 1, 28 do
+	-- 	print(Dmono.SectorStatusBought[i])
+	-- end
+	-- print("-------------------------------------------------------------------")
+	-- for i = 1, 28 do
+	-- 	print(Dmono.SectorRentTable[i])
+	-- end
+	-- print("-------------------------------------------------------------------")
+	-- for i = 1, 28 do
+	-- 	print(Dmono.SectorStatusUpgradeTable[i])
+	-- end
+	-- print("-------------------------------------------------------------------")
+	-- for i = 1, 28 do
+	-- 	print(Dmono.SectorUpgradePriceTable[i])
+	-- end
+	-- print("-------------------------------------------------------------------")
+	-- for i = 1, 28 do
+	-- 	print(Dmono.PriceSectorIndex[i])
+	-- end
+	-- print("-------------------------------------------------------------------")
+	-- for i = 1, 28 do
+	-- 	print(Dmono.SectorMortgageTable[i])
+	-- end
+	-- print("-------------------------------------------------------------------")
+		
+end
+
+function Dmono:SendMoneyToOwner(teamID, cost)
+    local playerCount = PlayerResource:GetPlayerCount()
+    for i = 0, playerCount - 1 do
+        local player = PlayerResource:GetPlayer(i)
+        if player and player:GetTeam() == teamID then
+            if player:GetAssignedHero() then -- Добавляем проверку на наличие героя у игрока
+                player:GetAssignedHero():ModifyGold(cost, false, 0)
+            end
+        end
+    end
+end
+
+function Dmono:GetPosForSector(pos)
+	local index = 0
+	if pos == Dmono:GetSectorPos(2) then
+		index = 1
+	elseif pos == Dmono:GetSectorPos(4) then
+		index = 2
+	elseif pos == Dmono:GetSectorPos(6) then
+		index = 3
+	elseif pos == Dmono:GetSectorPos(7) then
+		index = 4
+	elseif pos == Dmono:GetSectorPos(9) then
+		index = 5
+	elseif pos == Dmono:GetSectorPos(10) then
+		index = 6
+	elseif pos == Dmono:GetSectorPos(12) then
+		index = 7
+	elseif pos == Dmono:GetSectorPos(13) then
+		index = 8
+	elseif pos == Dmono:GetSectorPos(14) then
+		index = 9
+	elseif pos == Dmono:GetSectorPos(15) then
+		index = 10
+	elseif pos == Dmono:GetSectorPos(16) then
+		index = 11
+	elseif pos == Dmono:GetSectorPos(17) then
+		index = 12
+	elseif pos == Dmono:GetSectorPos(19) then
+		index = 13
+	elseif pos == Dmono:GetSectorPos(20) then
+		index = 14
+	elseif pos == Dmono:GetSectorPos(22) then
+		index = 15
+	elseif pos == Dmono:GetSectorPos(24) then
+		index = 16
+	elseif pos == Dmono:GetSectorPos(25) then
+		index = 17
+	elseif pos == Dmono:GetSectorPos(26) then
+		index = 18
+	elseif pos == Dmono:GetSectorPos(27) then
+		index = 19
+	elseif pos == Dmono:GetSectorPos(28) then
+		index = 20
+	elseif pos == Dmono:GetSectorPos(29) then
+		index = 21
+	elseif pos == Dmono:GetSectorPos(30) then
+		index = 22
+	elseif pos == Dmono:GetSectorPos(32) then
+		index = 23
+	elseif pos == Dmono:GetSectorPos(33) then
+		index = 24
+	elseif pos == Dmono:GetSectorPos(35) then
+		index = 25
+	elseif pos == Dmono:GetSectorPos(36) then
+		index = 26
+	elseif pos == Dmono:GetSectorPos(38) then
+		index = 27
+	elseif pos == Dmono:GetSectorPos(40) then
+		index = 28
+	end
+	return index
 end
 
 function DressPayTaxer( unit )
@@ -345,6 +548,52 @@ function DressTrentSector( trent )
 	shoulderModel:FollowEntity(trent, true)
 end
 
+function Dmono:FillSectorsTables(array, value)
+	table.insert(array, value)
+end
+
+function DressMorphSector( morphling )
+	local armsProp = SpawnEntityFromTableSynchronous("prop_dynamic", {
+		model = "models/items/morphling/abyss_overlord_arms/abyss_overlord_arms.vmdl",
+		origin = morphling:GetAbsOrigin(),
+		scale = 1.0,
+	})
+	armsProp:SetParent(morphling, "attach_attack1")
+	armsProp:FollowEntity(morphling, true)
+	
+	local backProp = SpawnEntityFromTableSynchronous("prop_dynamic", {
+		model = "models/items/morphling/abyss_overlord_back/abyss_overlord_back.vmdl",
+		origin = morphling:GetAbsOrigin(),
+		scale = 1.0,
+	})
+	backProp:SetParent(morphling, "attach_back")
+	backProp:FollowEntity(morphling, true)
+	
+	local headProp = SpawnEntityFromTableSynchronous("prop_dynamic", {
+		model = "models/items/morphling/abyss_overlord_head/abyss_overlord_head.vmdl",
+		origin = morphling:GetAbsOrigin(),
+		scale = 1.0,
+	})
+	headProp:SetParent(morphling, "attach_head")
+	headProp:FollowEntity(morphling, true)
+	
+	local miscProp = SpawnEntityFromTableSynchronous("prop_dynamic", {
+		model = "models/items/morphling/abyss_overlord_misc/abyss_overlord_misc.vmdl",
+		origin = morphling:GetAbsOrigin(),
+		scale = 1.0,
+	})
+	miscProp:SetParent(morphling, "attach_misc")
+	miscProp:FollowEntity(morphling, true)
+	
+	local shoulderProp = SpawnEntityFromTableSynchronous("prop_dynamic", {
+		model = "models/items/morphling/abyss_overlord_shoulder/abyss_overlord_shoulder.vmdl",
+		origin = morphling:GetAbsOrigin(),
+		scale = 1.0,
+	})
+	shoulderProp:SetParent(morphling, "attach_shoulder")
+	shoulderProp:FollowEntity(morphling, true)
+end
+
 function Dmono:OnPlaeyrChat(keys)
 	return false
 end	
@@ -371,6 +620,7 @@ function Dmono:GetValueFromNPC(index)
 	return self.PlayerNPCs[index]
 end
 
+
 function Dmono:OnThink()
 	Dmono:ParticleToSectors()
 	return 1
@@ -380,25 +630,48 @@ function Dmono:ParticleToSectors()
 	local sectorUnit
 	local digitsCount
 
-	for i = 1, 26 do
+	for i = 1, 28 do
 		if i == 3 then
 			sectorUnit = Entities:FindByName(nil,("sector_station_1"))
-		elseif i == 10 then
+		elseif i == 8 then
+			sectorUnit = Entities:FindByName(nil,("sector_utility_1"))
+			local particleShine = ParticleManager:CreateParticle("particles/units/heroes/hero_omniknight/omniknight_purification_cast_c.vpcf", PATTACH_ABSORIGIN_FOLLOW, sectorUnit )
+			ParticleManager:DestroyParticle(particleShine, false)
+			ParticleManager:ReleaseParticleIndex(particleShine)
+		elseif i == 11 then
 			sectorUnit = Entities:FindByName(nil,("sector_station_2"))
-		elseif i == 17 then
+		elseif i == 18 then
 			sectorUnit = Entities:FindByName(nil,("sector_station_3"))
-		elseif i == 24 then
+		elseif i == 21 then
+			sectorUnit = Entities:FindByName(nil,("sector_utility_2"))
+		elseif i == 26 then
 			sectorUnit = Entities:FindByName(nil,("sector_station_4"))
 		else
 			sectorUnit = Entities:FindByName(nil,("sector_"..i))
 		end
-		digitsCount = string.len(tostring(Dmono.priceSectorIndex[i]))
+
 		local particle = ParticleManager:CreateParticle("particles/msg_fx/msg_goldbounty.vpcf", PATTACH_OVERHEAD_FOLLOW, sectorUnit )
-		ParticleManager:SetParticleControl(particle, 0, sectorUnit:GetAbsOrigin())
-		ParticleManager:SetParticleControl(particle, 1, Vector(0, Dmono.priceSectorIndex[i], 0))
-		ParticleManager:SetParticleControl(particle, 2, Vector(2.0, digitsCount, 0))
-		ParticleManager:SetParticleControl(particle, 3, Vector(255, 200, 33))
+		if Dmono:GetFromSectorStatusBought(i) > 0 then
+			if i ~= 8 or i ~= 21 then
+				digitsCount = string.len(tostring(Dmono.SectorRentTable[i]))
+				ParticleManager:SetParticleControl(particle, 0, sectorUnit:GetAbsOrigin())
+				ParticleManager:SetParticleControl(particle, 1, Vector(0, Dmono.SectorRentTable[i], 0))
+				ParticleManager:SetParticleControl(particle, 2, Vector(2.0, digitsCount, 0))
+				ParticleManager:SetParticleControl(particle, 3, Vector(255, 200, 33))
+				ParticleManager:DestroyParticle(particle, false)
+				ParticleManager:ReleaseParticleIndex(particle)
+			end
+		else
+			digitsCount = string.len(tostring(Dmono.PriceSectorIndex[i]))
+			ParticleManager:SetParticleControl(particle, 0, sectorUnit:GetAbsOrigin())
+			ParticleManager:SetParticleControl(particle, 1, Vector(0, Dmono.PriceSectorIndex[i], 0))
+			ParticleManager:SetParticleControl(particle, 2, Vector(2.0, digitsCount, 0))
+			ParticleManager:SetParticleControl(particle, 3, Vector(255, 200, 33))
+			ParticleManager:DestroyParticle(particle, false)
+			ParticleManager:ReleaseParticleIndex(particle)
+		end
 	end
+	
 end
 
 function Dmono:HandleTurn()
@@ -412,18 +685,16 @@ function Dmono:HandleTurn()
 		prevPlayerHero:AddNewModifier(nil, nil, "modifier_stunned", {duration = -1})
 		prevPlayerHero:AddNewModifier(nil, nil, "modifier_silence", {duration = -1})
 		self.TurnFlag = false
-		print("turn flag activated")
 	end
-	print(Dmono:GetJailStatus(jailCondition))
 	if Dmono:GetJailStatus(jailCondition) == 0 then
 		playerHero:RemoveAbility("Jail_Roll")
+		playerHero:RemoveAbility("Pay_Jail")
+		playerHero:AddAbility("Pay_Jail"):SetLevel(1)
 	end
 	if playerHero ~= nil then
 		playerHero:RemoveModifierByName("modifier_stunned")
 		playerHero:RemoveModifierByName("modifier_silence")
-		print("turn" ..QueueTurns)
 	  else
-		print("turn" .. QueueTurns)
 		print("Player with ID 0 has no hero registered in the game.")
 	end
 	local timerHandle = Timers:CreateTimer("turn_timer", {
@@ -463,20 +734,12 @@ function Dmono:SetNewTurn()
 	self:HandleTurn()
 end
 
-function Dmono:PutInJail(CurrentPlayerIndex)
-	self.JailTable[CurrentPlayerIndex] = true
-end
-
 function Dmono:GetJailCoords()
 	return self.JailCoords
 end
 
 function Dmono:GetSectorPos( index )
 	return self.places[index]
-end
-
-function Dmono:SetDictionaryKeyValue( key, value )
-	self.priceSectorIndex[key] = value
 end
 
 function Dmono:MakeTeamWin(teamID)
@@ -551,3 +814,35 @@ function Dmono:ShuffleQueue(pIDTable)
 	
 	for i = 0, Utilities:TableSize(shuffled) do self.TurnsQueue[i] = shuffled[i] end
 end
+
+-- ⠄⠂⠄⠐⠄⠄⠄⠄⠄⢀⣠⣶⣶⣿⣿⣿⣷⣶⣶⣤⣀⡀⠄⠄⠄⠄⠄⠄⠂⠄⠐⠄⠄⠂⠄⠐⠄
+-- ⠄⠐⠈⠄⠄⠄⠄⣀⣴⣿⣿⣿⣿⣿⢿⣿⢿⣿⣿⣿⣿⣿⣿⣷⣦⡀⠄⠄⠄⠄⠁⢀⠈⠄⠈⠄⡀
+-- ⠐⠄⠄⠄⠄⢀⣴⣿⣿⡿⣿⢽⣾⣽⢿⣺⡯⣷⣻⣽⣻⣟⣿⣿⣿⣿⣦⡀⠄⠄⠄⠄⡀⠐⠈⠄⠄
+-- ⠄⠄⠄⠄⢀⣾⣿⣿⢿⡽⡯⣿⢾⣟⣿⣳⢿⡽⣾⣺⣳⣻⣺⣽⣻⡿⣿⣿⣦⠄⠄⠄⠄⠄⠄⠄⠂
+-- ⠄⠄⠄⠄⣿⣿⣿⣯⢿⣽⣻⣽⣿⣿⣯⣿⣿⣿⣷⣻⢮⣗⡯⣞⡾⡹⡵⣻⣿⣇⠄⠄⠄⠂⠄⠄⠠
+-- ⠄⠄⠄⣸⣿⣿⣿⣿⡿⡾⣳⢿⢿⢿⠿⠿⠟⠟⠟⠿⣯⡾⣝⣗⣯⢪⢎⢗⣯⣿⣇⠄⠄⠄⠄⢀⠄
+-- ⠄⠄⠄⠋⠉⠁⠑⠁⢉⣁⡁⠁⠁⠄⠄⠄⠄⠄⠄⠄⢉⢻⢽⣞⢾⣕⢕⢝⢎⣿⣿⡀⠄⠄⠄⠄⢀
+-- ⠄⠄⠄⡧⠠⡀⠐⠂⣸⣿⢿⢔⢔⢤⢈⠡⡱⣩⢤⢴⣞⣾⣽⢾⣽⣺⡕⡕⡕⡽⣿⣿⠟⢶⠄⠄⠄
+-- ⠄⠄⠄⣿⡳⡄⡢⡂⣿⣿⢯⣫⢗⣽⣳⡣⣗⢯⣟⣿⣿⢿⡽⣳⢗⡷⣻⡎⢎⢎⣿⡇⠻⣦⠃⠄⠄
+-- ⠄⠄⠄⡿⡝⡜⣜⣬⣿⣿⣿⣷⣯⢺⠻⡻⣜⢔⠡⢓⢝⢕⢏⢗⢏⢯⡳⡝⡸⡸⣸⣧⡀⣹⣠⠄⠄
+-- ⠄⠄⠄⣇⢪⢎⡧⡛⠛⠋⠋⠉⠙⣨⣮⣦⢅⡃⠇⡕⡌⡪⡨⢸⢨⢣⠫⡨⢪⢸⠰⣿⣇⣾⡞⠄⠄
+-- ⠄⠄⠄⢑⡕⡵⡻⣕⠄⠄⠄⠔⡜⡗⡟⣟⢿⢮⢆⡑⢕⣕⢎⢮⡪⡎⡪⡐⢅⢇⢣⠹⡛⣿⡅⠄⠄
+-- ⠄⠄⠄⢸⢎⠪⡊⣄⣰⣰⣵⣕⣮⣢⣳⡸⡨⠪⡨⠂⠄⠑⢏⠗⢍⠪⡢⢣⢃⠪⡂⣹⣽⣿⣷⡄⠄
+-- ⠄⠄⠄⡸⠐⠝⠋⠃⠡⡕⠬⠎⠬⠩⠱⢙⣘⣑⣁⡈⠄⠄⡕⢌⢊⢪⠸⡘⡜⢌⠢⣸⣾⢿⣿⣿⡀
+-- ⠄⠄⠄⡎⣐⠲⢒⢚⢛⢛⢛⢛⠛⠝⡋⡫⢉⠪⡱⠡⠄⠠⢣⢑⠱⡨⡊⡎⢜⢐⠅⢼⡾⣟⣿⣿⣷
+-- ⠄⠄⣠⡃⡢⠨⢀⢂⢐⢐⢄⠑⠌⢌⢂⠢⠡⡑⡘⢌⠠⡘⡌⢎⠜⡌⢎⠜⡌⠢⠨⡸⣿⡽⣿⣿⣿
+-- ⢴⠋⠁⡢⡑⡨⢐⢐⢌⠢⣂⢣⠩⡂⡢⡑⡑⡌⢜⠰⡨⢪⢘⠔⡱⢘⠔⡑⠨⢈⠐⢼⡷⣿⣻⢷⢯
+-- ⠂⠄⠄⡢⡃⡢⢊⢔⢢⠣⡪⡢⢣⠪⡢⡑⡕⡜⡜⡌⢎⢢⠱⠨⡂⡑⠨⠄⠁⡂⡨⣺⡽⡯⡫⠣⠡
+-- ⠄⠄⣰⡸⠐⠌⠆⢇⠎⡎⢎⢎⢎⢎⢎⢎⠎⡎⡪⠘⠌⠂⠁⠁⠄⢀⠄⢄⢢⢚⢮⢏⠞⡨⢂⠕⠉
+-- ⡀⢀⡯⡃⡌⠈⠈⠄⠄⠈⠄⠄⠄⠄⠄⠂⠁⠄⠄⠄⠄⠄⠄⢄⢂⢢⢱⢱⢱⠱⢡⢑⠌⢂⠡⠠⠡
+-- ⣀⡸⠨⢂⠌⡊⢄⢂⠠⠄⠄⠄⠄⠄⠄⠄⠄⠄⢀⠠⢐⢨⣘⢔⢵⠱⡃⡃⡕⡸⠐⡁⠌⡐⡨⠨⢊
+-- ⢣⢎⠨⠄⠄⠨⢊⢪⢪⡫⡪⡊⡐⡐⡐⡌⡬⡪⡪⣎⢗⡕⡎⡣⠃⢅⠊⠆⠡⠠⡁⠢⡑⡐⢌⢌⠢
+-- ⡎⡎⠄⠈⠄⠡⢂⠂⡕⡕⡕⠕⢌⢌⢢⢱⢸⡸⣪⢮⡣⡓⠌⠠⢑⠡⢈⠌⢌⢂⠪⠨⡂⣊⠢⡢⢣
+-- ⢢⢣⠊⢀⠨⠨⢐⠐⡸⡸⡪⡱⡑⡌⡆⡇⡇⣏⢮⢪⢪⠊⠄⢑⢐⠨⡐⢌⠢⡪⡘⢌⠢⡢⢣⠪⠊
+-- ⡣⡑⢅⠄⠄⠨⢐⠨⢰⢱⢣⢣⢪⢸⢨⡚⣞⢜⢎⢎⢎⠪⠐⠄⡆⡣⡪⡊⡪⡂⡪⡘⡌⡎⠊⠄⡐
+-- ⡣⠊⠄⣷⣄⠄⠄⠌⢸⢸⠱⡱⡡⡣⡣⡳⡕⡇⡇⡇⠥⠑⠄⢡⢑⠕⢔⢑⠔⡌⡆⠇⠁⡀⠄⠁⠄
+-- ⡊⠌⠄⣿⣿⣷⣤⣤⣂⣅⣑⠰⠨⠢⢑⣕⣜⣘⣨⣦⣥⣬⠄⢐⢅⢊⢢⢡⠣⠃⠄⡐⠠⠄⡂⠡⢈
+-- ⢨⠨⠄⢹⢛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⠟⠄⢰⢰⢱⠑⠁⢀⠐⡀⠂⠄⠡⠐⠐⡀
+-- ⡱⢐⠄⢸⡲⡠⠄⠉⠙⠻⠿⣿⠿⠿⢛⠫⡩⡳⣸⠾⠁⢀⢢⠣⠃⠄⠠⠐⡀⠂⠄⠡⠈⠄⡁⠂⠄
+-- ⢌⠆⢕⠈⣗⢥⢣⢡⢑⢌⡢⡢⢅⢇⢇⢯⢾⡽⠃⢀⠔⡅⠁⠄⠄⠨⢀⠡⠐⠈⠄⠡⢈⠐⡀⠅⠌
+-- ⠢⠭⢆⠦⡿⡷⡷⡵⡷⡷⣵⢽⡮⣷⢽⡽⡓⠤⠤⠕⡁⠠⠄⠅⠄⠅⠄⠂⠌⠠⠡⠈⠄⢂⠐⠠⠨

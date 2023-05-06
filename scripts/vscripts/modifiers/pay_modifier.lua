@@ -48,10 +48,6 @@ function pay_modifier:OnAttackLanded(params)
 
   if pos == Dmono:GetSectorPos(5) then
 		cost = 200
-	elseif pos == Dmono:GetSectorPos(13) then
-		cost = 150
-	elseif pos == Dmono:GetSectorPos(29) then
-		cost = 150
 	elseif pos == Dmono:GetSectorPos(39) then
 		cost = 100
 	end
@@ -70,11 +66,14 @@ function pay_modifier:OnAttackLanded(params)
       self.particle = ParticleManager:CreateParticle("particles/econ/items/bounty_hunter/bounty_hunter_ti9_immortal/bh_ti9_immortal_jinada.vpcf", PATTACH_ABSORIGIN_FOLLOW, self.parent)
       self:AddParticle(self.particle, false, false, -1, false, false)
       ParticleManager:DestroyParticle(self.particle, false)
-      local particle = ParticleManager:CreateParticle("particles/msg_fx/msg_goldbounty.vpcf", PATTACH_OVERHEAD_FOLLOW, caster )
-		  ParticleManager:SetParticleControl(particle, 0, caster:GetAbsOrigin())
-		  ParticleManager:SetParticleControl(particle, 1, Vector(0, cost, 0))
-		  ParticleManager:SetParticleControl(particle, 2, Vector(2.0, digitsCount, 0))
-		  ParticleManager:SetParticleControl(particle, 3, Vector(255, 200, 33))
+      ParticleManager:ReleaseParticleIndex(self.particle)
+      local particleGold = ParticleManager:CreateParticle("particles/msg_fx/msg_goldbounty.vpcf", PATTACH_OVERHEAD_FOLLOW, caster )
+		  ParticleManager:SetParticleControl(particleGold, 0, caster:GetAbsOrigin())
+		  ParticleManager:SetParticleControl(particleGold, 1, Vector(0, cost, 0))
+		  ParticleManager:SetParticleControl(particleGold, 2, Vector(2.0, digitsCount, 0))
+		  ParticleManager:SetParticleControl(particleGold, 3, Vector(255, 200, 33))
+      ParticleManager:DestroyParticle(particleGold, false)
+			ParticleManager:ReleaseParticleIndex(particleGold)
   end
 end
 

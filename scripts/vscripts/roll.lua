@@ -7,25 +7,24 @@ function Roll:OnSpellStart()
 	local rand1 = RandomInt(1, 6)
 	local rand2 = RandomInt(1, 6)
 	local teamID = PlayerResource:GetTeam(pID)
-	local overallrand = 2
+	local overallrand = 1
 	local casterPos = caster:GetOrigin()
 	local fakePos = Dmono:GetFakePos(pID)
-	print( rand1 .. " rand1" )
-	print( rand2 .. " rand2" )
-	print("teamID "..teamID)
-	print("playerID "..pID)
-	print(fakePos)
-	print(casterPos)
+	-- print( rand1 .. " rand1" )
+	-- print( rand2 .. " rand2" )
+	-- print("teamID "..teamID)
+	-- print("playerID "..pID)
+	-- print(fakePos)
+	-- print(casterPos)
+	Dmono:SetRandForUtility(rand1, rand2)
 	Say(caster, "Dice " .. rand1 .. " and ".. rand2 .. " Overall: ".. overallrand, false)
-	Dmono:PrintID()
-	print(Dmono:GetCountPlayers())
+
 	for i = 1, 40 do
 		
 		if casterPos == Vector(-1856, -1421.731445, 128) or casterPos == Vector(-1664, -1408, 128) or casterPos == Vector(-1664, -1719.28, 128) or casterPos == Vector(-1856, -1728, 128) then
 			casterPos = caster:GetOrigin()
 		elseif casterPos ~= fakePos then
 			casterPos = fakePos
-			print(casterPos)
 		end
 
 		if casterPos == Dmono:GetSectorPos(i) and (overallrand + i) > 40 then

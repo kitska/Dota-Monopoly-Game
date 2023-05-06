@@ -44,122 +44,50 @@ function changeAbility( event )
 		print(pos)
 	end
 
-	if pos == Dmono:GetSectorPos(2) then
-		index = 1
-		cost = 60
-	elseif pos == Dmono:GetSectorPos(4) then
-		index = 3
-		cost = 60
-	elseif pos == Dmono:GetSectorPos(6) then
-		index = 5
-		cost = 200
-	elseif pos == Dmono:GetSectorPos(7) then
-		index = 6
-		cost = 100
-	elseif pos == Dmono:GetSectorPos(9) then
-		index = 8
-		cost = 100
-	elseif pos == Dmono:GetSectorPos(10) then
-		index = 9
-		cost = 120
-	elseif pos == Dmono:GetSectorPos(12) then
-		index = 10
-		cost = 140
-	elseif pos == Dmono:GetSectorPos(14) then
-		index = 12
-		cost = 140
-	elseif pos == Dmono:GetSectorPos(15) then
-		index = 13
-		cost = 160
-	elseif pos == Dmono:GetSectorPos(16) then
-		index = 14
-		cost = 200
-	elseif pos == Dmono:GetSectorPos(17) then
-		index = 15
-		cost = 180
-	elseif pos == Dmono:GetSectorPos(19) then
-		index = 17
-		cost = 180
-	elseif pos == Dmono:GetSectorPos(20) then
-		index = 18
-		cost = 200
-	elseif pos == Dmono:GetSectorPos(22) then
-		index = 19
-		cost = 220
-	elseif pos == Dmono:GetSectorPos(24) then
-		index = 21
-		cost = 220
-	elseif pos == Dmono:GetSectorPos(25) then
-		index = 22
-		cost = 240
-	elseif pos == Dmono:GetSectorPos(26) then
-		index = 23
-		cost = 200
-	elseif pos == Dmono:GetSectorPos(27) then
-		index = 24
-		cost = 260
-	elseif pos == Dmono:GetSectorPos(28) then
-		index = 25
-		cost = 260
-	elseif pos == Dmono:GetSectorPos(30) then
-		index = 27
-		cost = 280
-	elseif pos == Dmono:GetSectorPos(32) then
-		index = 28
-		cost = 300
-	elseif pos == Dmono:GetSectorPos(33) then
-		index = 29
-		cost = 300
-	elseif pos == Dmono:GetSectorPos(35) then
-		index = 31
-		cost = 320
-	elseif pos == Dmono:GetSectorPos(36) then
-		index = 32
-		cost = 200
-	elseif pos == Dmono:GetSectorPos(38) then
-		index = 34
-		cost = 350
-	elseif pos == Dmono:GetSectorPos(40) then
-		index = 36
-		cost = 400
-	end
+	index = Dmono:GetPosForSector(pos)
+	cost = Dmono:GetFromSectorRentTable(index)
 
-	local visible_sectors = Entities:FindByName(nil,("sec_"..index.."_visible"))
 	local pID = player:GetPlayerID()
 	local teamID = PlayerResource:GetTeam(pID)
-	local teamColor = visible_sectors:GetRenderColor()
-	local FIRST_COLOR = Vector(255, 255, 255)
-	local heroTeamColor = Vector(0 ,0 ,0)
+	local checkSector = Dmono:GetFromSectorStatusBought(index)
 
-	if teamID == 2 then
-		heroTeamColor = Vector(61, 210, 150)
-	elseif teamID == 3 then
-		heroTeamColor = Vector(243, 201, 9)
-	elseif teamID == 6 then
-		heroTeamColor = Vector(197, 77, 168)
-	elseif teamID == 7 then
-		heroTeamColor = Vector(255, 108, 0)
-	end
-
-	if teamColor == FIRST_COLOR then
+	--print(cost.." rent")
+	if checkSector == teamID then
+		print("on own sector")
+		Dmono:HandleTurn()
+	elseif checkSector == 0 then
 		player:RemoveAbility("Roll")
 		player:AddAbility("None"):SetLevel(1)
 		player:AddAbility("Buy"):SetLevel(1)
-		return
-	elseif teamColor == heroTeamColor then
-		player:RemoveAbility("Roll")
-		player:AddAbility("None"):SetLevel(1)
-		return
-	else
-		player:RemoveAbility("Roll")
-		player:AddAbility("None"):SetLevel(1)
-		caster:ModifyGold(cost * -1, false, 0)
-		Say(player, "You got into property. You paid ".. cost .." to the owner", false)
+	elseif checkSector ~= teamID then
+		if index ~= 8 or index ~= 21 then
+			if player:GetGold() > cost then
+				player:ModifyGold(cost * -1, false, 0)
+				Dmono:SendMoneyToOwner(checkSector, cost)
+				Say(player, "You got into property. You paid ".. cost .." to the owner", false)
+			end
+		else
+			local multiplyer = 0
+			if Dmono:GetUtilityTable(pID) == 1 then
+				multiplyer = 4
+			elseif Dmono:GetUtilityTable(pID) == 2 then
+				multiplyer = 10
+			end
+			cost = (Dmono:GetRand1ForUtility() + Dmono:GetRand2ForUtility()) * multiplyer
+			if player:GetGold() > cost then
+				player:ModifyGold(cost * -1, false, 0)
+				Dmono:SendMoneyToOwner(checkSector, cost)
+			end
+		end
+		Dmono:HandleTurn()
 	end
 end
 
 function OnFirstSpawn( event )
 	player = event.activator
+	local pID = player:GetPlayerID()
+	Dmono:SetStationTable(pID, 0)
+	Dmono:SetUtilityTable(pID, 0)
 	player:RemoveAbility("None")
 	player:RemoveAbility("Roll")
 	player:RemoveAbility("Buy")
@@ -182,10 +110,6 @@ function OnPayTaxSector( event )
 
 	if pos == Dmono:GetSectorPos(5) then
 		index = 1
-	elseif pos == Dmono:GetSectorPos(13) then
-		index = 2
-	elseif pos == Dmono:GetSectorPos(29) then
-		index = 3
 	elseif pos == Dmono:GetSectorPos(39) then
 		index = 4
 	end

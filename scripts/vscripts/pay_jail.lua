@@ -12,8 +12,14 @@ function Pay_Jail:OnSpellStart()
         caster:ModifyGold(cost * -1, false, 0)
         Say(caster,"Released from jail", false)
         Dmono:SetFakePos(pID, Vector(-1732.92, 1629.54, 128))
-        caster:RemoveAbility("Jail_Roll")
-	    caster:RemoveAbility("Pay_Jail")
-        caster:AddAbility("Roll"):SetLevel(1)
+        if caster:HasAbility("Jail_Roll") then
+            caster:RemoveAbility("Jail_Roll")
+            caster:RemoveAbility("Pay_Jail")
+            caster:AddAbility("Roll"):SetLevel(1)
+        else
+	        caster:RemoveAbility("Pay_Jail")
+            caster:AddAbility("Roll"):SetLevel(1)
+        end
+        Dmono:InsertJail(pID, nil)
     end
 end
