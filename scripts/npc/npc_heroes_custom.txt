@@ -13,7 +13,7 @@
 		
 		"Ability1"						"Roll"
 		"Ability2"						"Buy"		
-		"Ability3"						"None"			
+		"Ability3"						"Upgrade"			
 		"Ability4"						"None"			
 		"Ability5"						"None"		
 		"Ability6"						"None"			

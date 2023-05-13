@@ -54,7 +54,7 @@ function changeAbility( event )
 	--print(cost.." rent")
 	if checkSector == teamID then
 		print("on own sector")
-		Dmono:HandleTurn()
+		Dmono:SetNewTurn()
 	elseif checkSector == 0 then
 		player:RemoveAbility("Roll")
 		player:AddAbility("None"):SetLevel(1)
@@ -79,19 +79,21 @@ function changeAbility( event )
 				Dmono:SendMoneyToOwner(checkSector, cost)
 			end
 		end
-		Dmono:HandleTurn()
+		Dmono:SetNewTurn()
 	end
 end
 
 function OnFirstSpawn( event )
 	player = event.activator
 	local pID = player:GetPlayerID()
+	player:SetAbilityPoints(0)
 	Dmono:SetStationTable(pID, 0)
 	Dmono:SetUtilityTable(pID, 0)
 	player:RemoveAbility("None")
 	player:RemoveAbility("Roll")
 	player:RemoveAbility("Buy")
 	player:AddAbility("Roll"):SetLevel(1)
+	player:FindAbilityByName("Upgrade"):SetLevel(1)
 end
 
 function OnPayTaxSector( event )

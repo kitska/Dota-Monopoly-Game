@@ -35,6 +35,8 @@ function Dmono:InitGameMode()
 	Dmono.FakePos = {}
 	Dmono.TeamSectorValues = {}
 
+	Dmono.currentTurnTimerHandle = nil
+
 	Dmono.pIDs = {}
 	Dmono.TurnsQueue = {}
 	Dmono.PlayerNPCs = {}
@@ -50,6 +52,7 @@ function Dmono:InitGameMode()
 	Dmono.SectorUpgradePriceTable = {}
 	Dmono.PriceSectorIndex = {}
 	Dmono.SectorMortgageTable = {}
+	Dmono.BaseUpgrade = {}
 
 	Dmono.Upgrade1RentCost = {}
 	Dmono.Upgrade2RentCost = {}
@@ -62,6 +65,8 @@ function Dmono:InitGameMode()
 
 	Dmono.Rand1ForUtility = 0
 	Dmono.Rand2ForUtility = 0
+
+	Dmono.StreetTable = {}
 
 	self.m_TeamColors = {}
 	self.m_TeamColors[DOTA_TEAM_GOODGUYS] = { 61, 210, 150 }	--		Teal
@@ -139,7 +144,7 @@ function Dmono:InitGameMode()
 	GameRules:SetHeroSelectionTime(999)
 	GameRules:SetPreGameTime(5)
 	GameRules:GetGameModeEntity():SetFogOfWarDisabled(true)
-	
+	--GameRules:GetGameModeEntity():SetCameraDistanceOverride( 3000 )
 	
 	GameMode = GameRules:GetGameModeEntity()
 	GameMode:SetRecommendedItemsDisabled(true)
@@ -151,7 +156,11 @@ function Dmono:InitGameMode()
 	GameMode:SetStashPurchasingDisabled(true)
 	GameMode:SetBuybackEnabled(false)
 	GameMode:SetDaynightCycleDisabled(false)
-	GameRules:GetGameModeEntity():SetThink("OnThink", self, "GlobalThink", 2)
+	GameMode:SetThink("OnThink", self, "GlobalThink", 2)
+	GameMode:SetHUDVisible(DOTA_DEFAULT_UI_TOP_HEROES, false)
+	GameMode:SetHUDVisible(DOTA_DEFAULT_UI_AGHANIMS_STATUS, false)
+
+	 
 	ListenToGameEvent("npc_spawned", OnNPCSpawned, nil)
 
 	local paytax1 = Entities:FindByName(nil,("pay_tax_entity_1"))
@@ -169,6 +178,34 @@ function Dmono:InitGameMode()
 	self:FromKVToTables()
 end
 
+function Dmono:CheckStreetCondition(teamID)
+	if Dmono:GetFromSectorStatusBought(1) == teamID and Dmono:GetFromSectorStatusBought(2) == teamID then 
+		self.StreetTable[1] = teamID
+		return true
+	elseif Dmono:GetFromSectorStatusBought(4) == teamID and Dmono:GetFromSectorStatusBought(5) == teamID and Dmono:GetFromSectorStatusBought(6) == teamID then
+		self.StreetTable[2] = teamID
+		return true
+	elseif Dmono:GetFromSectorStatusBought(7) == teamID and Dmono:GetFromSectorStatusBought(9) == teamID and Dmono:GetFromSectorStatusBought(10) == teamID then
+		self.StreetTable[3] = teamID
+		return true
+	elseif Dmono:GetFromSectorStatusBought(12) == teamID and Dmono:GetFromSectorStatusBought(13) == teamID and Dmono:GetFromSectorStatusBought(14) == teamID then
+		self.StreetTable[4] = teamID
+		return true
+	elseif Dmono:GetFromSectorStatusBought(15) == teamID and Dmono:GetFromSectorStatusBought(16) == teamID and Dmono:GetFromSectorStatusBought(17) == teamID then
+		self.StreetTable[5] = teamID
+		return true
+	elseif Dmono:GetFromSectorStatusBought(19) == teamID and Dmono:GetFromSectorStatusBought(20) == teamID and Dmono:GetFromSectorStatusBought(22) == teamID then
+		self.StreetTable[6] = teamID
+		return true
+	elseif Dmono:GetFromSectorStatusBought(23) == teamID and Dmono:GetFromSectorStatusBought(24) == teamID and Dmono:GetFromSectorStatusBought(25) == teamID then
+		self.StreetTable[7] = teamID
+		return true
+	elseif Dmono:GetFromSectorStatusBought(27) == teamID and Dmono:GetFromSectorStatusBought(28) == teamID then
+		self.StreetTable[8] = teamID
+		return true
+	end
+end
+
 function Dmono:SetRandForUtility(rand1, rand2)
 	Dmono.Rand1ForUtility = rand1
 	Dmono.Rand2ForUtility = rand2
@@ -180,6 +217,10 @@ end
 
 function Dmono:GetRand2ForUtility()
 	return Dmono.Rand2ForUtility
+end
+
+function Dmono:GetFromBaseUpgrade(index)
+	return self.BaseUpgrade[index]
 end
 
 function Dmono:GetStationTable(playerID)
@@ -254,6 +295,26 @@ function Dmono:UpdateFromSectorMortgageTable(index, value)
 	self.SectorMortgageTable[index] = value
 end
 
+function Dmono:GetFromUpgrade1RentCost(index)
+	return self.Upgrade1RentCost[index]
+end
+
+function Dmono:GetFromUpgrade2RentCost(index)
+	return self.Upgrade2RentCost[index]
+end
+
+function Dmono:GetFromUpgrade3RentCost(index)
+	return self.Upgrade3RentCost[index]
+end
+
+function Dmono:GetFromUpgrade4RentCost(index)
+	return self.Upgrade4RentCost[index]
+end
+
+function Dmono:GetFromUpgradeFinaleRentCost(index)
+	return self.UpgradeFinaleRentCost[index]
+end
+
 function Dmono:LoadAllKV()
 	print("Loading all KVs")
 	GameRules.kvSector = LoadKeyValues("scripts/KV/sectors.kv")
@@ -273,16 +334,26 @@ function Dmono:FromKVToTables()
 				Dmono:FillSectorsTables(Dmono.SectorUpgradePriceTable, sector.UpgradeCost)
 				Dmono:FillSectorsTables(Dmono.PriceSectorIndex, sector.Price)
 				Dmono:FillSectorsTables(Dmono.SectorMortgageTable, sector.Mortgage)
-
-				Dmono:FillSectorsTables(Dmono.Upgrade1RentCost, sector.Upgrade1)
-				Dmono:FillSectorsTables(Dmono.Upgrade2RentCost, sector.Upgrade2)
-				Dmono:FillSectorsTables(Dmono.Upgrade3RentCost, sector.Upgrade3)
-				Dmono:FillSectorsTables(Dmono.Upgrade4RentCost, sector.Upgrade4)
-				Dmono:FillSectorsTables(Dmono.UpgradeFinaleRentCost, sector.FinalUpgrade)
+				if sector.Upgrade1 == nil or sector.Upgrade2 == nil or sector.Upgrade3 == nil or sector.Upgrade4 == nil or sector.FinalUpgrade == nil then
+					Dmono:FillSectorsTables(Dmono.Upgrade1RentCost, 0)
+					Dmono:FillSectorsTables(Dmono.Upgrade2RentCost, 0)
+					Dmono:FillSectorsTables(Dmono.Upgrade3RentCost, 0)
+					Dmono:FillSectorsTables(Dmono.Upgrade4RentCost, 0)
+					Dmono:FillSectorsTables(Dmono.UpgradeFinaleRentCost, 0)
+				else
+					Dmono:FillSectorsTables(Dmono.Upgrade1RentCost, sector.Upgrade1)
+					Dmono:FillSectorsTables(Dmono.Upgrade2RentCost, sector.Upgrade2)
+					Dmono:FillSectorsTables(Dmono.Upgrade3RentCost, sector.Upgrade3)
+					Dmono:FillSectorsTables(Dmono.Upgrade4RentCost, sector.Upgrade4)
+					Dmono:FillSectorsTables(Dmono.UpgradeFinaleRentCost, sector.FinalUpgrade)
+				end
 				numCounter = numCounter + 1
 			end
 		end
 	until numCounter > 28
+	for i = 1, 28 do
+		self.BaseUpgrade[i] = self.SectorUpgradePriceTable[i]
+	end
 end
 
 function OnNPCSpawned(keys)
@@ -341,7 +412,12 @@ function OnNPCSpawned(keys)
 	-- 	print(Dmono.SectorMortgageTable[i])
 	-- end
 	-- print("-------------------------------------------------------------------")
-		
+	-- for i = 1, 28 do
+	-- 	print(Dmono.Upgrade1RentCost[i])
+	-- end
+	-- for i = 1, 28 do
+	-- 	print(Dmono.BaseUpgrade[i])
+	-- end
 end
 
 function Dmono:SendMoneyToOwner(teamID, cost)
@@ -349,7 +425,7 @@ function Dmono:SendMoneyToOwner(teamID, cost)
     for i = 0, playerCount - 1 do
         local player = PlayerResource:GetPlayer(i)
         if player and player:GetTeam() == teamID then
-            if player:GetAssignedHero() then -- Добавляем проверку на наличие героя у игрока
+            if player:GetAssignedHero() then
                 player:GetAssignedHero():ModifyGold(cost, false, 0)
             end
         end
@@ -682,6 +758,10 @@ function Dmono:HandleTurn()
 	local prevPlayerHero = Dmono:GetValueFromNPC(prevIndex)
 	if self.TurnFlag and prevPlayerHero == nil then
 		prevPlayerHero = Dmono:GetValueFromNPC(self.PlayerCount)
+		prevPlayerHero:AddNewModifier(nil, nil, "modifier_stunned", {duration = -1})
+		prevPlayerHero:AddNewModifier(nil, nil, "modifier_silence", {duration = -1})
+		self.TurnFlag = false
+	elseif self.TurnFlag and prevPlayerHero ~= nil then 
 		prevPlayerHero:AddNewModifier(nil, nil, "modifier_stunned", {duration = -1})
 		prevPlayerHero:AddNewModifier(nil, nil, "modifier_silence", {duration = -1})
 		self.TurnFlag = false

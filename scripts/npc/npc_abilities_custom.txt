@@ -7,7 +7,7 @@
 	{
 		"BaseClass"						"ability_lua"
 		"ScriptFile"					"roll.lua"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
 		"AbilityTextureName"			"dice_icon"
 		"MaxLevel"						"1"
 	}
@@ -16,7 +16,7 @@
 	{
 		"BaseClass"						"ability_lua"
 		"ScriptFile"					"buy.lua"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
 		"MaxLevel"						"1"
 		"AbilityTextureName"			"buy_icon"
 
@@ -26,7 +26,7 @@
 	{
 		"BaseClass"					"ability_lua"
 		"ScriptFile"				"none.lua"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
 		"MaxLevel"					"1"
 		"AbilityTextureName"		"none_icon"
 	}
@@ -64,7 +64,7 @@
 	{
 		"BaseClass"						"ability_lua"
 		"ScriptFile"					"jail_roll.lua"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
 		"AbilityTextureName"			"jail_dice_icon"
 		"MaxLevel"						"1"
 	}
@@ -73,8 +73,38 @@
 	{
 		"BaseClass"						"ability_lua"
 		"ScriptFile"					"pay_jail.lua"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
 		"AbilityTextureName"			"jail_buyback_icon"
 		"MaxLevel"						"1"
+	}
+
+	"Upgrade"
+	{
+		"BaseClass"						"ability_lua"
+		"ScriptFile"					"upgrade.lua"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET"
+		"AbilityUnitTargetTeam"         "DOTA_UNIT_TARGET_TEAM_ENEMY"
+		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_CREEP"
+		"AbilityTextureName"			"upgrade_icon"
+		"MaxLevel"						"1"
+
+    	"AbilitySpecial"
+    	{
+    	  "01"
+    	  {
+    	    "var_type"          "FIELD_INTEGER"
+    	    "chance"            "100"
+    	  }
+    	  "02"
+    	  {
+    	    "var_type"          "FIELD_INTEGER"
+    	    "gold"     			"0"
+    	  }
+    	  "03"
+    	  {
+    	    "var_type"         "FIELD_INTEGER"
+    	    "damage"           "0"
+    	  }
+    	}
 	}
 }
