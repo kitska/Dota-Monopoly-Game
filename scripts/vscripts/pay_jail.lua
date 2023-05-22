@@ -3,8 +3,6 @@ Pay_Jail = class({})
 function Pay_Jail:OnSpellStart()
     local caster = self:GetCaster()
 	local pID = caster:GetPlayerID()
-	local rand1 = RandomInt(1, 6)
-	local rand2 = RandomInt(1, 6)
     local cost = 50
     if caster:GetGold() < 50 then
         Say(caster, "Dont have enough money",false)
@@ -22,4 +20,5 @@ function Pay_Jail:OnSpellStart()
         end
         Dmono:InsertJail(pID, nil)
     end
+    caster:AddNewModifier(nil, nil, "modifier_muted", {duration = -1})
 end

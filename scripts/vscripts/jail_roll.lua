@@ -12,6 +12,7 @@ function Jail_Roll:OnSpellStart()
         caster:RemoveAbility("Jail_Roll")
 	    caster:RemoveAbility("Pay_Jail")
         caster:AddAbility("Roll"):SetLevel(1)
+        caster:AddNewModifier(nil, nil, "modifier_muted", {duration = -1})
         Dmono:InsertJail(pID, nil)
     else
         Say(caster,"Unlucky, stay in jail", false)

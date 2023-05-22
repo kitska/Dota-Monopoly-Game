@@ -158,6 +158,7 @@ end
 
 function InJailTrigger( event )
 	player = event.activator
+	player:RemoveModifierByName("modifier_muted")
 	player:RemoveAbility("Roll")
 	player:AddAbility("Jail_Roll"):SetLevel(1)
 	player:AddAbility("Pay_Jail"):SetLevel(1)

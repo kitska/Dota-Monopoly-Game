@@ -30,6 +30,8 @@ function Dmono:InitGameMode()
 	print( "Load complete" )
 
 	Dmono.RollCount = 0
+
+	Dmono.Flag = 0
 	
 	Dmono.BougntSectors = 0
 	Dmono.FakePos = {}
@@ -67,6 +69,181 @@ function Dmono:InitGameMode()
 	Dmono.Rand2ForUtility = 0
 
 	Dmono.StreetTable = {}
+
+	Dmono.ChestSectorScriptTable = {}
+	self.ChestSectorScriptTable[1] = function(player)
+		if player ~= nil then
+			player:ModifyGold(200, false, 0)
+			Say(player, "", false)
+		end
+	end
+	self.ChestSectorScriptTable[2] = function(player)
+		if player ~= nil then
+			player:ModifyGold(25, false, 0)
+			Say(player, "", false)
+		end
+	end
+	self.ChestSectorScriptTable[3] = function(player)
+		--освобождение от тюрьмы
+	end
+	self.ChestSectorScriptTable[4] = function(player)
+		if player ~= nil then
+			player:ModifyGold(25, false, 0)
+			Say(player, "", false)
+		end
+	end
+	self.ChestSectorScriptTable[5] = function(player)
+		if player ~= nil then
+			player:ModifyGold(100, false, 0)
+			Say(player, "", false)
+		end
+	end
+	self.ChestSectorScriptTable[6] = function(player)
+		if player ~= nil then
+			player:ModifyGold(25, false, 0)
+			Say(player, "", false)
+		end
+	end
+	self.ChestSectorScriptTable[7] = function(player)
+		-- в тюрьму
+	end
+	self.ChestSectorScriptTable[8] = function(player)
+		if player ~= nil then
+			if player:GetGold() > 50 then
+				player:ModifyGold(50 * -1, false, 0)
+				Say(player, "", false)
+			else
+				return 1
+			end
+		end
+	end
+	self.ChestSectorScriptTable[9] = function(player)
+		if player ~= nil then
+			player:ModifyGold(10, false, 0)
+			Say(player, "", false)
+		end
+	end
+	self.ChestSectorScriptTable[10] = function(player)
+		if player ~= nil then
+			player:ModifyGold(50, false, 0)
+			Say(player, "", false)
+		end
+	end
+	self.ChestSectorScriptTable[11] = function(player)
+		if player ~= nil then
+			if player:GetGold() > 100 then
+				player:ModifyGold(100 * -1, false, 0)
+				Say(player, "", false)
+			else
+				return 1
+			end
+		end
+	end
+	self.ChestSectorScriptTable[12] = function(player)
+		-- телепорт на кобольда 1
+	end
+	self.ChestSectorScriptTable[13] = function(player)
+		if player ~= nil then
+			player:ModifyGold(100, false, 0)
+			Say(player, "", false)
+		end
+	end
+	self.ChestSectorScriptTable[14] = function(player)
+		-- день рождения
+	end
+	self.ChestSectorScriptTable[15] = function(player)
+		-- штраф или карта шанс
+	end
+	self.ChestSectorScriptTable[16] = function(player)
+		if player ~= nil then
+			if player:GetGold() > 50 then
+				player:ModifyGold(50 * -1, false, 0)
+				Say(player, "", false)
+			else
+				return 1
+			end
+		end
+	end
+
+	Dmono.ChanceSectorScriptTable = {}
+	self.ChanceSectorScriptTable[1] = function(player)
+		-- тп к имбалансному большому
+	end
+	self.ChanceSectorScriptTable[2] = function(player)
+		-- на старт тп
+	end
+	self.ChanceSectorScriptTable[3] = function(player)
+		-- освобождение из тюрьмы
+	end
+	self.ChanceSectorScriptTable[4] = function(player)
+		-- сбор на ремонт улицы
+	end
+	self.ChanceSectorScriptTable[5] = function(player)
+		-- тп на трента если через старт то + 200
+	end
+	self.ChanceSectorScriptTable[6] = function(player)
+		if player ~= nil then
+			if player:GetGold() > 15 then
+				player:ModifyGold(15 * -1, false, 0)
+				Say(player, "", false)
+			else
+				return 1
+			end
+		end
+	end
+	self.ChanceSectorScriptTable[7] = function(player)
+		if player ~= nil then
+			player:ModifyGold(150, false, 0)
+			Say(player, "", false)
+		end
+	end
+	self.ChanceSectorScriptTable[8] = function(player)
+		-- в тюрьму
+	end
+	self.ChanceSectorScriptTable[9] = function(player)
+		-- капитальный ремонт
+	end
+	self.ChanceSectorScriptTable[10] = function(player)
+		-- тп на катапульту верхнюю если через старт то + 200
+	end
+	self.ChanceSectorScriptTable[11] = function(player)
+		if player ~= nil then
+			player:ModifyGold(50, false, 0)
+			Say(player, "", false)
+		end
+	end
+	self.ChanceSectorScriptTable[12] = function(player)
+		if player ~= nil then
+			if player:GetGold() > 20 then
+				player:ModifyGold(20 * -1, false, 0)
+				Say(player, "", false)
+			else
+				return 1
+			end
+		end
+	end
+	self.ChanceSectorScriptTable[13] = function(player)
+		if player ~= nil then
+			if player:GetGold() > 150 then
+				player:ModifyGold(150 * -1, false, 0)
+				Say(player, "", false)
+			else
+				return 1
+			end
+		end
+	end
+	self.ChanceSectorScriptTable[14] = function(player)
+		if player ~= nil then
+			player:ModifyGold(100, false, 0)
+			Say(player, "", false)
+		end
+	end
+	self.ChanceSectorScriptTable[15] = function(player)
+		-- тп на маленькую гарпию если через старт то + 200
+	end
+	self.ChanceSectorScriptTable[16] = function(player)
+		-- на три клетки назад
+	end
 
 	self.m_TeamColors = {}
 	self.m_TeamColors[DOTA_TEAM_GOODGUYS] = { 61, 210, 150 }	--		Teal
@@ -361,6 +538,7 @@ function OnNPCSpawned(keys)
     if npc:IsRealHero() then
       local modifier = npc:AddNewModifier(nil, nil, "modifier_stunned", {duration = -1})
 	  local modifier2 = npc:AddNewModifier(nil, nil, "modifier_silence", {duration = -1})
+	  local modifier3 = npc:AddNewModifier(nil, nil, "modifier_muted", {duration = -1})
     end
 
 	Dmono.playerCountTeam1 = PlayerResource:GetPlayerCountForTeam(2)
@@ -384,9 +562,8 @@ function OnNPCSpawned(keys)
 	else
 		Dmono.TurnsQueue = {0}
 	end
+	npc:AddItemByName("item_release_from_prison")
 	Dmono:InsertNPC(npc)
-	Dmono:HandleTurn()
-
 	-- print("-------------------------------------------------------------------")
 	-- for i = 1, 28 do
 	-- 	print(Dmono.SectorStatusBought[i])
@@ -699,6 +876,10 @@ end
 
 function Dmono:OnThink()
 	Dmono:ParticleToSectors()
+	if GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS and self.Flag == 0 then
+		Dmono:HandleTurn()
+		self.Flag = self.Flag + 1
+	end
 	return 1
 end
 
