@@ -74,44 +74,52 @@ function Dmono:InitGameMode()
 	self.ChestSectorScriptTable[1] = function(player)
 		if player ~= nil then
 			player:ModifyGold(200, false, 0)
-			Say(player, "", false)
+			Say(player, "Banking error in your favor. Get 200 gold", false)
 		end
 	end
 	self.ChestSectorScriptTable[2] = function(player)
 		if player ~= nil then
 			player:ModifyGold(25, false, 0)
-			Say(player, "", false)
+			Say(player, "Favorable sale of shares. Get 25 gold", false)
 		end
 	end
 	self.ChestSectorScriptTable[3] = function(player)
 		--освобождение от тюрьмы
+		if player ~= nil then
+			player:AddItemByName("item_release_from_prison")
+			Say(player, "Release from prison. The card can be used later or sold", false)
+		end
 	end
 	self.ChestSectorScriptTable[4] = function(player)
 		if player ~= nil then
 			player:ModifyGold(25, false, 0)
-			Say(player, "", false)
+			Say(player, "Favorable sale of shares. Get 25 gold", false)
 		end
 	end
 	self.ChestSectorScriptTable[5] = function(player)
 		if player ~= nil then
 			player:ModifyGold(100, false, 0)
-			Say(player, "", false)
+			Say(player, "You have received an inheritance. Get 100 gold", false)
 		end
 	end
 	self.ChestSectorScriptTable[6] = function(player)
 		if player ~= nil then
 			player:ModifyGold(25, false, 0)
-			Say(player, "", false)
+			Say(player, "Tax refund. Get 25 gold", false)
 		end
 	end
 	self.ChestSectorScriptTable[7] = function(player)
 		-- в тюрьму
+		if player ~= nil then 
+			FindClearSpaceForUnit(player, Vector(1732.92, -1565.54, 128), true)
+			Say(player, "You have been arrested. Go to jail", false)
+		end
 	end
 	self.ChestSectorScriptTable[8] = function(player)
 		if player ~= nil then
 			if player:GetGold() > 50 then
 				player:ModifyGold(50 * -1, false, 0)
-				Say(player, "", false)
+				Say(player, "Insurance payment. Pay 50 gold", false)
 			else
 				return 1
 			end
@@ -120,20 +128,20 @@ function Dmono:InitGameMode()
 	self.ChestSectorScriptTable[9] = function(player)
 		if player ~= nil then
 			player:ModifyGold(10, false, 0)
-			Say(player, "", false)
+			Say(player, "You won second place in a beauty pageant. Get 10 gold", false)
 		end
 	end
 	self.ChestSectorScriptTable[10] = function(player)
 		if player ~= nil then
 			player:ModifyGold(50, false, 0)
-			Say(player, "", false)
+			Say(player, "Favorable sale of bonds. Get 50 gold", false)
 		end
 	end
 	self.ChestSectorScriptTable[11] = function(player)
 		if player ~= nil then
 			if player:GetGold() > 100 then
 				player:ModifyGold(100 * -1, false, 0)
-				Say(player, "", false)
+				Say(player, "Payment for treatment. Pay 50 gold", false)
 			else
 				return 1
 			end
@@ -141,24 +149,46 @@ function Dmono:InitGameMode()
 	end
 	self.ChestSectorScriptTable[12] = function(player)
 		-- телепорт на кобольда 1
+		if player ~= nil then 
+			local pID = player:GetPlayerID()
+			FindClearSpaceForUnit(player, Vector(-1575.39, -1129.84, 128), true)
+			Dmono:SetFakePos(pID, Vector(-1575.39, -1129.84, 128))
+			Say(player, "Return to the small kobold", false)
+		end
 	end
 	self.ChestSectorScriptTable[13] = function(player)
 		if player ~= nil then
 			player:ModifyGold(100, false, 0)
-			Say(player, "", false)
+			Say(player, "Collection of rent. Get 100 gold", false)
 		end
 	end
 	self.ChestSectorScriptTable[14] = function(player)
 		-- день рождения
+		if player ~= nil then 
+			for i = 1, self.PlayerCount do 
+				if Dmono:GetValueFromNPC(i):GetGold() > 10 and  Dmono:GetValueFromNPC(i) ~= player then
+					Dmono:GetValueFromNPC(i):ModifyGold(10 * -1, false, 0)
+				else
+					player:ModifyGold((10 * (self.PlayerCount - 1)), false, 0)
+				end
+			end
+			Say(player, "Happy Birthday. Get 10 gold from each player", false)
+		end
 	end
 	self.ChestSectorScriptTable[15] = function(player)
 		-- штраф или карта шанс
+		if player ~= nil then 
+			Say(player, "Pay a fine of 10 gold or take a 'Chance'", false)
+			player:RemoveAbility("Roll")
+			player:AddAbility("Chest_Sector_Card"):SetLevel(1)
+			player:AddAbility("Pay_Chest_Sector"):SetLevel(1)
+		end
 	end
 	self.ChestSectorScriptTable[16] = function(player)
 		if player ~= nil then
 			if player:GetGold() > 50 then
 				player:ModifyGold(50 * -1, false, 0)
-				Say(player, "", false)
+				Say(player, "Payment for doctor's services. Pay 50 gold", false)
 			else
 				return 1
 			end
@@ -168,15 +198,54 @@ function Dmono:InitGameMode()
 	Dmono.ChanceSectorScriptTable = {}
 	self.ChanceSectorScriptTable[1] = function(player)
 		-- тп к имбалансному большому
+		if player ~= nil then 
+			local pID = player:GetPlayerID()
+			FindClearSpaceForUnit(player, Vector(-1260.31, -1420.31, 128), true)
+			Dmono:SetFakePos(pID, Vector(-1260.31, -1420.31, 128))
+			Say(player, "Go to Imbalansniy", false)
+		end
 	end
 	self.ChanceSectorScriptTable[2] = function(player)
 		-- на старт тп
+		if player ~= nil then 
+			local pID = player:GetPlayerID()
+			FindClearSpaceForUnit(player, Vector(-1732.92, -1565.54, 128), true)
+			Dmono:SetFakePos(pID, Vector(-1732.92, -1565.54, 128))
+			Say(player, "Go to start", false)
+		end
 	end
 	self.ChanceSectorScriptTable[3] = function(player)
 		-- освобождение из тюрьмы
+		if player ~= nil then
+			player:AddItemByName("item_release_from_prison")
+			Say(player, "Release from prison. The card can be used later or sold", false)
+		end
 	end
 	self.ChanceSectorScriptTable[4] = function(player)
 		-- сбор на ремонт улицы
+		if player ~= nil then
+			local overallsumm = 0
+			local forOneUpgrade = 40
+			local forOneFinaleUpgrade = 115
+			local upgadeCounter = 0
+			local FinaleUpgadeCounter = 0
+			local upgradeNum = 0
+			for i = 1, 28 do 
+				if Dmono:GetFromSectorStatusUpgradeTable(i) ~= "NoUpgrade" and Dmono:GetFromSectorStatusUpgradeTable(i) ~= "Upgrade5" then
+					upgradeNum = tonumber(string.match(Dmono:GetFromSectorStatusUpgradeTable(i), "%d+"))
+					upgadeCounter = upgradeNum + upgadeCounter
+				end
+				if Dmono:GetFromSectorStatusUpgradeTable(i) == "Upgrade5" then
+					FinaleUpgadeCounter = FinaleUpgadeCounter + 1
+				end
+			end
+			overallsumm = (forOneUpgrade * upgadeCounter) + (forOneFinaleUpgrade * FinaleUpgadeCounter)
+			if player:GetGold() > overallsumm then
+				player:ModifyGold(overallsumm * -1, false, 0)
+			end
+			Say(player,"Collection for street repairs. For each upgrade 40 gold for each final upgrade 115", false)
+			Say(player,"You have ".. upgadeCounter.." upgrades. And you have "..FinaleUpgadeCounter.." final upgrades. Pay "..overallsumm, false)
+		end
 	end
 	self.ChanceSectorScriptTable[5] = function(player)
 		-- тп на трента если через старт то + 200
@@ -202,6 +271,29 @@ function Dmono:InitGameMode()
 	end
 	self.ChanceSectorScriptTable[9] = function(player)
 		-- капитальный ремонт
+		if player ~= nil then
+			local overallsumm = 0
+			local forOneUpgrade = 25
+			local forOneFinaleUpgrade = 100
+			local upgadeCounter = 0
+			local FinaleUpgadeCounter = 0
+			local upgradeNum = 0
+			for i = 1, 28 do 
+				if Dmono:GetFromSectorStatusUpgradeTable(i) ~= "NoUpgrade" and Dmono:GetFromSectorStatusUpgradeTable(i) ~= "Upgrade5" then
+					upgradeNum = tonumber(string.match(Dmono:GetFromSectorStatusUpgradeTable(i), "%d+"))
+					upgadeCounter = upgradeNum + upgadeCounter
+				end
+				if Dmono:GetFromSectorStatusUpgradeTable(i) == "Upgrade5" then
+					FinaleUpgadeCounter = FinaleUpgadeCounter + 1
+				end
+			end
+			overallsumm = (forOneUpgrade * upgadeCounter) + (forOneFinaleUpgrade * FinaleUpgadeCounter)
+			if player:GetGold() > overallsumm then
+				player:ModifyGold(overallsumm * -1, false, 0)
+			end
+			Say(player,"Capital repairs. For each upgrade 25 gold for each last upgrade 100", false)
+			Say(player,"You have ".. upgadeCounter.." upgrades. And you have "..FinaleUpgadeCounter.." final upgrades. Pay "..overallsumm, false)
+		end
 	end
 	self.ChanceSectorScriptTable[10] = function(player)
 		-- тп на катапульту верхнюю если через старт то + 200
@@ -334,7 +426,6 @@ function Dmono:InitGameMode()
 	GameMode:SetBuybackEnabled(false)
 	GameMode:SetDaynightCycleDisabled(false)
 	GameMode:SetThink("OnThink", self, "GlobalThink", 2)
-	GameMode:SetHUDVisible(DOTA_DEFAULT_UI_TOP_HEROES, false)
 	GameMode:SetHUDVisible(DOTA_DEFAULT_UI_AGHANIMS_STATUS, false)
 
 	 
@@ -511,7 +602,7 @@ function Dmono:FromKVToTables()
 				Dmono:FillSectorsTables(Dmono.SectorUpgradePriceTable, sector.UpgradeCost)
 				Dmono:FillSectorsTables(Dmono.PriceSectorIndex, sector.Price)
 				Dmono:FillSectorsTables(Dmono.SectorMortgageTable, sector.Mortgage)
-				if sector.Upgrade1 == nil or sector.Upgrade2 == nil or sector.Upgrade3 == nil or sector.Upgrade4 == nil or sector.FinalUpgrade == nil then
+				if sector.Upgrade1 == nil or sector.Upgrade2 == nil or sector.Upgrade3 == nil or sector.Upgrade4 == nil or sector.Upgrade5 == nil then
 					Dmono:FillSectorsTables(Dmono.Upgrade1RentCost, 0)
 					Dmono:FillSectorsTables(Dmono.Upgrade2RentCost, 0)
 					Dmono:FillSectorsTables(Dmono.Upgrade3RentCost, 0)
@@ -522,7 +613,7 @@ function Dmono:FromKVToTables()
 					Dmono:FillSectorsTables(Dmono.Upgrade2RentCost, sector.Upgrade2)
 					Dmono:FillSectorsTables(Dmono.Upgrade3RentCost, sector.Upgrade3)
 					Dmono:FillSectorsTables(Dmono.Upgrade4RentCost, sector.Upgrade4)
-					Dmono:FillSectorsTables(Dmono.UpgradeFinaleRentCost, sector.FinalUpgrade)
+					Dmono:FillSectorsTables(Dmono.UpgradeFinaleRentCost, sector.Upgrade5)
 				end
 				numCounter = numCounter + 1
 			end
@@ -562,39 +653,7 @@ function OnNPCSpawned(keys)
 	else
 		Dmono.TurnsQueue = {0}
 	end
-	npc:AddItemByName("item_release_from_prison")
 	Dmono:InsertNPC(npc)
-	-- print("-------------------------------------------------------------------")
-	-- for i = 1, 28 do
-	-- 	print(Dmono.SectorStatusBought[i])
-	-- end
-	-- print("-------------------------------------------------------------------")
-	-- for i = 1, 28 do
-	-- 	print(Dmono.SectorRentTable[i])
-	-- end
-	-- print("-------------------------------------------------------------------")
-	-- for i = 1, 28 do
-	-- 	print(Dmono.SectorStatusUpgradeTable[i])
-	-- end
-	-- print("-------------------------------------------------------------------")
-	-- for i = 1, 28 do
-	-- 	print(Dmono.SectorUpgradePriceTable[i])
-	-- end
-	-- print("-------------------------------------------------------------------")
-	-- for i = 1, 28 do
-	-- 	print(Dmono.PriceSectorIndex[i])
-	-- end
-	-- print("-------------------------------------------------------------------")
-	-- for i = 1, 28 do
-	-- 	print(Dmono.SectorMortgageTable[i])
-	-- end
-	-- print("-------------------------------------------------------------------")
-	-- for i = 1, 28 do
-	-- 	print(Dmono.Upgrade1RentCost[i])
-	-- end
-	-- for i = 1, 28 do
-	-- 	print(Dmono.BaseUpgrade[i])
-	-- end
 end
 
 function Dmono:SendMoneyToOwner(teamID, cost)
@@ -872,7 +931,6 @@ end
 function Dmono:GetValueFromNPC(index)
 	return self.PlayerNPCs[index]
 end
-
 
 function Dmono:OnThink()
 	Dmono:ParticleToSectors()

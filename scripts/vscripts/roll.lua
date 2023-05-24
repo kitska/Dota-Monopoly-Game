@@ -18,7 +18,7 @@ function Roll:OnSpellStart()
 	-- print(casterPos)
 	Dmono:SetRandForUtility(rand1, rand2)
 	Say(caster, "Dice " .. rand1 .. " and ".. rand2 .. " Overall: ".. overallrand, false)
-
+	
 	for i = 1, 40 do
 		
 		if casterPos == Vector(-1856, -1421.731445, 128) or casterPos == Vector(-1664, -1408, 128) or casterPos == Vector(-1664, -1719.28, 128) or casterPos == Vector(-1856, -1728, 128) then

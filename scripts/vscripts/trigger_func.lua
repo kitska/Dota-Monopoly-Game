@@ -93,7 +93,7 @@ function OnFirstSpawn( event )
 	player:RemoveAbility("Roll")
 	player:RemoveAbility("Buy")
 	player:AddAbility("Roll"):SetLevel(1)
-	player:FindAbilityByName("Upgrade"):SetLevel(1)
+	player:AddAbility("Upgrade"):SetLevel(1)
 end
 
 function OnPayTaxSector( event )
@@ -134,11 +134,17 @@ end
 
 function OnChestSector( event )
 	player = event.activator
-	Dmono:SetNewTurn()
+	local randForChest = RandomInt(1, 15) 
+	Dmono.ChestSectorScriptTable[randForChest](player)
+	if randForChest ~= 15 then
+		Dmono:SetNewTurn()
+	end
 end
 
 function OnChanceSector( event )
 	player = event.activator
+	local randForChance = 4--RandomInt(1, 15)
+	Dmono.ChanceSectorScriptTable[randForChance](player)
 	Dmono:SetNewTurn()
 end
 

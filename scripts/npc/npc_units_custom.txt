@@ -611,7 +611,7 @@
         "VisionNighttimeRange"        "600"        // Range of vision at night time.
     }
 
-    "npc_dota_sector_8"
+    "npc_dota_sector_9"
     {
         // General
         //
@@ -686,7 +686,7 @@
         "VisionNighttimeRange"        "600"        // Range of vision at night time.
     }
 
-    "npc_dota_sector_9"
+    "npc_dota_sector_10"
     {
         // General
         //
@@ -836,7 +836,7 @@
         "VisionNighttimeRange"        "600"        // Range of vision at night time.
     }
 
-    "npc_dota_sector_11"
+    "npc_dota_sector_12"
     {
         // General
         //
@@ -911,7 +911,7 @@
         "VisionNighttimeRange"        "600"        // Range of vision at night time.
     }
 
-    "npc_dota_sector_12"
+    "npc_dota_sector_13"
     {
         // General
         //
@@ -986,7 +986,7 @@
         "VisionNighttimeRange"        "600"        // Range of vision at night time.
     }
 
-    "npc_dota_sector_13"
+    "npc_dota_sector_14"
     {
         // General
         //
@@ -1061,7 +1061,7 @@
         "VisionNighttimeRange"        "600"        // Range of vision at night time.
     }
 
-    "npc_dota_sector_14"
+    "npc_dota_sector_15"
     {
         // General
         //
@@ -1136,7 +1136,7 @@
         "VisionNighttimeRange"        "600"        // Range of vision at night time.
     }
 
-    "npc_dota_sector_15"
+    "npc_dota_sector_16"
     {
         // General
         //
@@ -1211,7 +1211,7 @@
         "VisionNighttimeRange"        "600"        // Range of vision at night time.
     }
 
-    "npc_dota_sector_16"
+    "npc_dota_sector_17"
     {
         // General
         //
@@ -1361,86 +1361,11 @@
         "VisionNighttimeRange"        "600"        // Range of vision at night time.
     }
 
-    "npc_dota_sector_18"
-    {
-        // General
-        //
-        "Model"						"models/creeps/neutral_creeps/n_creep_golem_b/n_creep_golem_b.vmdl"	// Model.
-		"BaseClass"					"npc_dota_creature"
-		"SoundSet"					"Hero_BountyHunter"
-		"GameSoundsFile"			"soundevents/game_sounds_creeps.vsndevts"
-		"Level"						"1"
-		"ModelScale" 				"1"
-                
-        // Abilities
-        //----------------------------------------------------------------
-        
-        "Ability1"                    ""            // Ability 1.
-        "Ability2"                    ""            // Ability 2.
-        "Ability3"                    ""            // Ability 3.
-        "Ability4"                    ""            // Ability 4.
-        "Ability5"                    ""            // Ability 5.
-        "Ability6"                    ""            // Ability 6 - Extra.
-        "Ability7"                    ""            // Ability 7 - Extra.
-        "Ability8"                    ""            // Ability 8 - Extra.
-
-        // Armor
-        //----------------------------------------------------------------
-        "ArmorPhysical"                "1"            // Physical protection.
-        "MagicalResistance"                "50"            // Magical protection.
-
-        // Attack
-        //----------------------------------------------------------------
-        "AttackCapabilities"		"DOTA_UNIT_CAP_NO_ATTACK"
-		"AttackDamageMin"			"1"		// Damage range min.
-		"AttackDamageMax"			"2"		// Damage range max.
-		"AttackRate"				"1.6"		// Speed of attack.
-		"AttackAnimationPoint"		"0.4"		// Normalized time in animation cycle to attack.
-		"AttackAcquisitionRange"	"800"		// Range within a target can be acquired.
-		"AttackRange"				"410"		// Range within a target can be attacked.		     
-		"ProjectileModel"			"" // Particle system model for projectile.
-		"ProjectileSpeed"			""		// Speed of projectile.	
-
-        // Bounty
-        //----------------------------------------------------------------
-        "BountyXP"                    "0"        // Experience earn.
-        "BountyGoldMin"                "0"            // Gold earned min.
-        "BountyGoldMax"                "0"        // Gold earned max.
-
-        // Bounds
-        //----------------------------------------------------------------
-        "BoundsHullName"            "DOTA_HULL_SIZE_SMALLEST"            // Hull type used for navigation/locomotion.
-        "HealthBarOffset"            "140"
-
-        // Movement
-        //----------------------------------------------------------------
-       	"MovementCapabilities"		"DOTA_UNIT_CAP_MOVE_GROUND"
-
-        // Status
-        //----------------------------------------------------------------
-        "StatusHealth"                "175"        // Base health.
-        "StatusHealthRegen"            "0.0"        // Health regeneration rate.
-        "StatusMana"                "0"            // Base mana.
-        "StatusManaRegen"            "0"            // Mana regeneration rate.
-
-        // Team
-        //----------------------------------------------------------------
-        "TeamName"                    "DOTA_TEAM_NEUTRALS"            // Team name.
-        "CombatClassAttack"            "DOTA_COMBAT_CLASS_ATTACK_HERO"
-        "CombatClassDefend"            "DOTA_COMBAT_CLASS_DEFEND_BASIC"
-        "UnitRelationshipClass"        "DOTA_NPC_UNIT_RELATIONSHIP_TYPE_DEFAULT"
-        
-        // Vision
-        //----------------------------------------------------------------
-        "VisionDaytimeRange"        "800"        // Range of vision during day light.
-        "VisionNighttimeRange"        "600"        // Range of vision at night time.
-    }
-
     "npc_dota_sector_19"
     {
         // General
         //
-        "Model"						"models/creeps/neutral_creeps/n_creep_golem_a/neutral_creep_golem_a.vmdl"	// Model.
+        "Model"						"models/creeps/neutral_creeps/n_creep_golem_b/n_creep_golem_b.vmdl"	// Model.
 		"BaseClass"					"npc_dota_creature"
 		"SoundSet"					"Hero_BountyHunter"
 		"GameSoundsFile"			"soundevents/game_sounds_creeps.vsndevts"
@@ -1520,6 +1445,81 @@
 		"SoundSet"					"Hero_BountyHunter"
 		"GameSoundsFile"			"soundevents/game_sounds_creeps.vsndevts"
 		"Level"						"1"
+		"ModelScale" 				"1"
+                
+        // Abilities
+        //----------------------------------------------------------------
+        
+        "Ability1"                    ""            // Ability 1.
+        "Ability2"                    ""            // Ability 2.
+        "Ability3"                    ""            // Ability 3.
+        "Ability4"                    ""            // Ability 4.
+        "Ability5"                    ""            // Ability 5.
+        "Ability6"                    ""            // Ability 6 - Extra.
+        "Ability7"                    ""            // Ability 7 - Extra.
+        "Ability8"                    ""            // Ability 8 - Extra.
+
+        // Armor
+        //----------------------------------------------------------------
+        "ArmorPhysical"                "1"            // Physical protection.
+        "MagicalResistance"                "50"            // Magical protection.
+
+        // Attack
+        //----------------------------------------------------------------
+        "AttackCapabilities"		"DOTA_UNIT_CAP_NO_ATTACK"
+		"AttackDamageMin"			"1"		// Damage range min.
+		"AttackDamageMax"			"2"		// Damage range max.
+		"AttackRate"				"1.6"		// Speed of attack.
+		"AttackAnimationPoint"		"0.4"		// Normalized time in animation cycle to attack.
+		"AttackAcquisitionRange"	"800"		// Range within a target can be acquired.
+		"AttackRange"				"410"		// Range within a target can be attacked.		     
+		"ProjectileModel"			"" // Particle system model for projectile.
+		"ProjectileSpeed"			""		// Speed of projectile.	
+
+        // Bounty
+        //----------------------------------------------------------------
+        "BountyXP"                    "0"        // Experience earn.
+        "BountyGoldMin"                "0"            // Gold earned min.
+        "BountyGoldMax"                "0"        // Gold earned max.
+
+        // Bounds
+        //----------------------------------------------------------------
+        "BoundsHullName"            "DOTA_HULL_SIZE_SMALLEST"            // Hull type used for navigation/locomotion.
+        "HealthBarOffset"            "140"
+
+        // Movement
+        //----------------------------------------------------------------
+       	"MovementCapabilities"		"DOTA_UNIT_CAP_MOVE_GROUND"
+
+        // Status
+        //----------------------------------------------------------------
+        "StatusHealth"                "175"        // Base health.
+        "StatusHealthRegen"            "0.0"        // Health regeneration rate.
+        "StatusMana"                "0"            // Base mana.
+        "StatusManaRegen"            "0"            // Mana regeneration rate.
+
+        // Team
+        //----------------------------------------------------------------
+        "TeamName"                    "DOTA_TEAM_NEUTRALS"            // Team name.
+        "CombatClassAttack"            "DOTA_COMBAT_CLASS_ATTACK_HERO"
+        "CombatClassDefend"            "DOTA_COMBAT_CLASS_DEFEND_BASIC"
+        "UnitRelationshipClass"        "DOTA_NPC_UNIT_RELATIONSHIP_TYPE_DEFAULT"
+        
+        // Vision
+        //----------------------------------------------------------------
+        "VisionDaytimeRange"        "800"        // Range of vision during day light.
+        "VisionNighttimeRange"        "600"        // Range of vision at night time.
+    }
+
+    "npc_dota_sector_22"
+    {
+        // General
+        //
+        "Model"						"models/creeps/neutral_creeps/n_creep_golem_a/neutral_creep_golem_a.vmdl"	// Model.
+		"BaseClass"					"npc_dota_creature"
+		"SoundSet"					"Hero_BountyHunter"
+		"GameSoundsFile"			"soundevents/game_sounds_creeps.vsndevts"
+		"Level"						"1"
 		"ModelScale" 				"1.5"
                 
         // Abilities
@@ -1586,7 +1586,7 @@
         "VisionNighttimeRange"        "600"        // Range of vision at night time.
     }
 
-    "npc_dota_sector_21"
+    "npc_dota_sector_23"
     {
         // General
         //
@@ -1661,7 +1661,7 @@
         "VisionNighttimeRange"        "600"        // Range of vision at night time.
     }
 
-    "npc_dota_sector_22"
+    "npc_dota_sector_24"
     {
         // General
         //
@@ -1736,7 +1736,7 @@
         "VisionNighttimeRange"        "600"        // Range of vision at night time.
     }
 
-    "npc_dota_sector_23"
+    "npc_dota_sector_25"
     {
         // General
         //
@@ -1886,7 +1886,7 @@
         "VisionNighttimeRange"        "600"        // Range of vision at night time.
     }
 
-    "npc_dota_sector_25"
+    "npc_dota_sector_27"
     {
         // General
         //
@@ -1961,7 +1961,7 @@
         "VisionNighttimeRange"        "600"        // Range of vision at night time.
     }
 
-    "npc_dota_sector_26"
+    "npc_dota_sector_28"
     {
         // General
         //

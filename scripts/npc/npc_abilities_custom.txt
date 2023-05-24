@@ -107,4 +107,22 @@
     	  }
     	}
 	}
+
+	"Chest_Sector_Card"
+	{
+		"BaseClass"						"ability_lua"
+		"ScriptFile"					"chest_sector_card.lua"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityTextureName"			"chance_sector_icon"
+		"MaxLevel"						"1"
+	}
+
+	"Pay_Chest_Sector"
+	{
+		"BaseClass"						"ability_lua"
+		"ScriptFile"					"pay_chest_sector.lua"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityTextureName"			"buy_icon"
+		"MaxLevel"						"1"
+	}
 }

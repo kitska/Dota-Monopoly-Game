@@ -15,4 +15,5 @@ function item_release_from_prison:OnSpellStart()
     Dmono:InsertJail(pID, nil)
     local item = caster:FindItemInInventory("item_release_from_prison")
     caster:RemoveItem(item)
+    caster:AddNewModifier(nil, nil, "modifier_muted", {duration = -1})
 end

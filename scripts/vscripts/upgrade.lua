@@ -32,11 +32,9 @@ function Upgrade:OnSpellStart()
                 elseif Dmono:GetFromSectorStatusUpgradeTable(sectorIndex) == "Upgrade3" then
                     Dmono:UpdateFromSectorStatusUpgradeTable(sectorIndex, "Upgrade4")
                     Dmono:UpdateFromSectorRentTable(sectorIndex, Dmono:GetFromUpgrade4RentCost(sectorIndex))
-                elseif Dmono:UpdateFromSectorStatusUpgradeTable(sectorIndex, "Upgrade4") then
-                    Dmono:UpdateFromSectorStatusUpgradeTable(sectorIndex, "FinalUpgrade")
+                elseif Dmono:GetFromSectorStatusUpgradeTable(sectorIndex, "Upgrade4") then
+                    Dmono:UpdateFromSectorStatusUpgradeTable(sectorIndex, "Upgrade5")
                     Dmono:UpdateFromSectorRentTable(sectorIndex, Dmono:GetFromUpgradeFinaleRentCost(sectorIndex))
-                elseif Dmono:UpdateFromSectorStatusUpgradeTable(sectorIndex, "FinalUpgrade") then
-                    return 1
                 end
                 if caster:GetGold() > Dmono:GetFromSectorUpgradePriceTable(sectorIndex) then 
                     caster:ModifyGold(Dmono:GetFromSectorUpgradePriceTable(sectorIndex) * -1, false, 0)
