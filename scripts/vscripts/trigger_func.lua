@@ -134,18 +134,26 @@ end
 
 function OnChestSector( event )
 	player = event.activator
-	local randForChest = RandomInt(1, 15) 
+	local randForChest = RandomInt(1, 16) 
 	Dmono.ChestSectorScriptTable[randForChest](player)
-	if randForChest ~= 15 then
+	if Dmono:GetChestFlag() then
+		return
+	else
 		Dmono:SetNewTurn()
 	end
 end
 
 function OnChanceSector( event )
 	player = event.activator
-	local randForChance = 4--RandomInt(1, 15)
+	local pID = player:GetPlayerID()
+	local playerPos = Dmono:GetFakePos(pID)
+	local randForChance = RandomInt(1, 16)
 	Dmono.ChanceSectorScriptTable[randForChance](player)
-	Dmono:SetNewTurn()
+	if Dmono:GetChanceFlag() then
+		return
+	else
+		Dmono:SetNewTurn()
+	end
 end
 
 function OnVisitJailSector( event )

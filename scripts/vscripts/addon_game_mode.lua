@@ -32,6 +32,9 @@ function Dmono:InitGameMode()
 	Dmono.RollCount = 0
 
 	Dmono.Flag = 0
+
+	Dmono.ChestFlag = false
+	Dmono.ChanceFlag = false
 	
 	Dmono.BougntSectors = 0
 	Dmono.FakePos = {}
@@ -111,6 +114,7 @@ function Dmono:InitGameMode()
 	self.ChestSectorScriptTable[7] = function(player)
 		-- в тюрьму
 		if player ~= nil then 
+			Dmono:SetChestFlag(true)
 			FindClearSpaceForUnit(player, Vector(1732.92, -1565.54, 128), true)
 			Say(player, "You have been arrested. Go to jail", false)
 		end
@@ -150,6 +154,7 @@ function Dmono:InitGameMode()
 	self.ChestSectorScriptTable[12] = function(player)
 		-- телепорт на кобольда 1
 		if player ~= nil then 
+			Dmono:SetChestFlag(true)
 			local pID = player:GetPlayerID()
 			FindClearSpaceForUnit(player, Vector(-1575.39, -1129.84, 128), true)
 			Dmono:SetFakePos(pID, Vector(-1575.39, -1129.84, 128))
@@ -178,6 +183,7 @@ function Dmono:InitGameMode()
 	self.ChestSectorScriptTable[15] = function(player)
 		-- штраф или карта шанс
 		if player ~= nil then 
+			Dmono:SetChestFlag(true)
 			Say(player, "Pay a fine of 10 gold or take a 'Chance'", false)
 			player:RemoveAbility("Roll")
 			player:AddAbility("Chest_Sector_Card"):SetLevel(1)
@@ -199,6 +205,7 @@ function Dmono:InitGameMode()
 	self.ChanceSectorScriptTable[1] = function(player)
 		-- тп к имбалансному большому
 		if player ~= nil then 
+			Dmono:SetChanceFlag(true)
 			local pID = player:GetPlayerID()
 			FindClearSpaceForUnit(player, Vector(-1260.31, -1420.31, 128), true)
 			Dmono:SetFakePos(pID, Vector(-1260.31, -1420.31, 128))
@@ -249,12 +256,27 @@ function Dmono:InitGameMode()
 	end
 	self.ChanceSectorScriptTable[5] = function(player)
 		-- тп на трента если через старт то + 200
+		if player ~= nil then 
+			Dmono:SetChanceFlag(true)
+			local pID = player:GetPlayerID()
+			local playerPos = Dmono:GetFakePos(pID)
+			local sectorToTeleport = Vector(1575.38, 322.462, 128)
+			if Dmono:GetSectorIndexPos(playerPos) > Dmono:GetSectorIndexPos(sectorToTeleport) then
+				FindClearSpaceForUnit(player, sectorToTeleport, true)
+				player:ModifyGold(200, false, 0)
+				Say(player,"Go to Forest Protector and get 200 gold", false)
+			else
+				FindClearSpaceForUnit(player, sectorToTeleport, true)
+				Say(player,"Go to Forest Protector", false)
+			end
+			Dmono:SetFakePos(pID, sectorToTeleport)
+		end
 	end
 	self.ChanceSectorScriptTable[6] = function(player)
 		if player ~= nil then
 			if player:GetGold() > 15 then
 				player:ModifyGold(15 * -1, false, 0)
-				Say(player, "", false)
+				Say(player, "Speeding fine. Pay 15 gold", false)
 			else
 				return 1
 			end
@@ -263,11 +285,16 @@ function Dmono:InitGameMode()
 	self.ChanceSectorScriptTable[7] = function(player)
 		if player ~= nil then
 			player:ModifyGold(150, false, 0)
-			Say(player, "", false)
+			Say(player, "Loan return. Get 150 gold", false)
 		end
 	end
 	self.ChanceSectorScriptTable[8] = function(player)
 		-- в тюрьму
+		if player ~= nil then 
+			Dmono:SetChanceFlag(true)
+			FindClearSpaceForUnit(player, Vector(1732.92, -1565.54, 128), true)
+			Say(player, "You have been arrested. Go to jail", false)
+		end
 	end
 	self.ChanceSectorScriptTable[9] = function(player)
 		-- капитальный ремонт
@@ -297,18 +324,33 @@ function Dmono:InitGameMode()
 	end
 	self.ChanceSectorScriptTable[10] = function(player)
 		-- тп на катапульту верхнюю если через старт то + 200
+		if player ~= nil then 
+			Dmono:SetChanceFlag(true)
+			local pID = player:GetPlayerID()
+			local playerPos = Dmono:GetFakePos(pID)
+			local sectorToTeleport = Vector(315.077, 1484.31, 128)
+			if Dmono:GetSectorIndexPos(playerPos) > Dmono:GetSectorIndexPos(sectorToTeleport) then
+				FindClearSpaceForUnit(player, sectorToTeleport, true)
+				player:ModifyGold(200, false, 0)
+				Say(player,"Go to Dire Cata and get 200 gold", false)
+			else
+				FindClearSpaceForUnit(player, sectorToTeleport, true)
+				Say(player,"Go to Dire Cata", false)
+			end
+			Dmono:SetFakePos(pID, sectorToTeleport)
+		end
 	end
 	self.ChanceSectorScriptTable[11] = function(player)
 		if player ~= nil then
 			player:ModifyGold(50, false, 0)
-			Say(player, "", false)
+			Say(player, "Bank dividends. Get 150 gold", false)
 		end
 	end
 	self.ChanceSectorScriptTable[12] = function(player)
 		if player ~= nil then
 			if player:GetGold() > 20 then
 				player:ModifyGold(20 * -1, false, 0)
-				Say(player, "", false)
+				Say(player, "Drunk driving. 20 gold penalty", false)
 			else
 				return 1
 			end
@@ -318,7 +360,7 @@ function Dmono:InitGameMode()
 		if player ~= nil then
 			if player:GetGold() > 150 then
 				player:ModifyGold(150 * -1, false, 0)
-				Say(player, "", false)
+				Say(player, "Payment for driver training. Pay 150 gold", false)
 			else
 				return 1
 			end
@@ -327,14 +369,37 @@ function Dmono:InitGameMode()
 	self.ChanceSectorScriptTable[14] = function(player)
 		if player ~= nil then
 			player:ModifyGold(100, false, 0)
-			Say(player, "", false)
+			Say(player, "You have won the chess championship. Get 100 gold", false)
 		end
 	end
 	self.ChanceSectorScriptTable[15] = function(player)
 		-- тп на маленькую гарпию если через старт то + 200
+		if player ~= nil then 
+			Dmono:SetChanceFlag(true)
+			local pID = player:GetPlayerID()
+			local playerPos = Dmono:GetFakePos(pID)
+			local sectorToTeleport = Vector(-1575.39, 322.462, 128)
+			if Dmono:GetSectorIndexPos(playerPos) > Dmono:GetSectorIndexPos(sectorToTeleport) then
+				FindClearSpaceForUnit(player, sectorToTeleport, true)
+				player:ModifyGold(200, false, 0)
+				Say(player,"Go to Small Harpy and get 200 gold", false)
+			else
+				FindClearSpaceForUnit(player, sectorToTeleport, true)
+				Say(player,"Go to Small Harpy", false)
+			end
+			Dmono:SetFakePos(pID, sectorToTeleport)
+		end
 	end
 	self.ChanceSectorScriptTable[16] = function(player)
 		-- на три клетки назад
+		if player ~= nil then
+			Dmono:SetChanceFlag(true)
+			local pID = player:GetPlayerID()
+			local playerPos = Dmono:GetFakePos(pID)
+			FindClearSpaceForUnit(player, Dmono:GetSectorPos(Dmono:GetSectorIndexPos(playerPos) - 3), true)
+			Say(player, "Go back three sectors", false)
+			Dmono:SetFakePos(pID, Dmono:GetSectorPos(Dmono:GetSectorIndexPos(playerPos) - 3))
+		end
 	end
 
 	self.m_TeamColors = {}
@@ -444,6 +509,22 @@ function Dmono:InitGameMode()
 
 	self:LoadAllKV()
 	self:FromKVToTables()
+end
+
+function Dmono:SetChestFlag(value)
+	self.ChestFlag = value
+end
+
+function Dmono:SetChanceFlag(value)
+	self.ChanceFlag = value
+end
+
+function Dmono:GetChestFlag()
+	return self.ChestFlag
+end
+
+function Dmono:GetChanceFlag()
+	return self.ChanceFlag
 end
 
 function Dmono:CheckStreetCondition(teamID)
@@ -1059,6 +1140,14 @@ end
 
 function Dmono:GetSectorPos( index )
 	return self.places[index]
+end
+
+function Dmono:GetSectorIndexPos(pos)
+	for i=1, 40 do 
+		if self.places[i] == pos then
+			return i
+		end
+	end
 end
 
 function Dmono:MakeTeamWin(teamID)
