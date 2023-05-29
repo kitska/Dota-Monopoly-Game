@@ -1019,6 +1019,46 @@ function Dmono:OnThink()
 		Dmono:HandleTurn()
 		self.Flag = self.Flag + 1
 	end
+	local playerCount = PlayerResource:GetPlayerCount()
+	local hero = nil
+	local pID = nil
+	if GameRules:State_Get() == DOTA_GAMERULES_STATE_PRE_GAME then
+		for i = 0, playerCount - 1 do
+			local player = PlayerResource:GetPlayer(i)
+			if player then
+				if player:GetAssignedHero() then
+					hero = player:GetAssignedHero()
+					pID = hero:GetPlayerID()
+					print(hero:GetGold())
+					CustomNetTables:SetTableValue(
+						"networth_players",
+						tostring(pID),
+						{
+							net = hero:GetGold(),
+						}
+					)			
+				end
+			end
+		end
+	elseif GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
+		for i = 0, playerCount - 1 do
+			local player = PlayerResource:GetPlayer(i)
+			if player then
+				if player:GetAssignedHero() then
+					hero = player:GetAssignedHero()
+					pID = hero:GetPlayerID()
+					print(hero:GetGold())
+					CustomNetTables:SetTableValue(
+						"networth_players",
+						tostring(pID),
+						{
+							net = hero:GetGold(),
+						}
+					)
+				end
+			end
+		end
+	end
 	return 1
 end
 
