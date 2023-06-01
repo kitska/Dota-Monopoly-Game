@@ -47,6 +47,7 @@ function Dmono:InitGameMode()
 	Dmono.PlayerNPCs = {}
 	Dmono.CurrentPlayerIndex = 1
 	Dmono.TurnFlag = false
+	Dmono.SkipFlagTable = {}
 
 	Dmono.JailTable = {}
 	Dmono.JailDiceCounter = 0
@@ -143,8 +144,8 @@ function Dmono:InitGameMode()
 	end
 	self.ChestSectorScriptTable[11] = function(player)
 		if player ~= nil then
-			if player:GetGold() > 100 then
-				player:ModifyGold(100 * -1, false, 0)
+			if player:GetGold() > 50 then
+				player:ModifyGold(50 * -1, false, 0)
 				Say(player, "Payment for treatment. Pay 50 gold", false)
 			else
 				return 1
@@ -328,7 +329,7 @@ function Dmono:InitGameMode()
 			Dmono:SetChanceFlag(true)
 			local pID = player:GetPlayerID()
 			local playerPos = Dmono:GetFakePos(pID)
-			local sectorToTeleport = Vector(315.077, 1484.31, 128)
+			local sectorToTeleport = Vector(-0.000305176, 1484.31, 128)
 			if Dmono:GetSectorIndexPos(playerPos) > Dmono:GetSectorIndexPos(sectorToTeleport) then
 				FindClearSpaceForUnit(player, sectorToTeleport, true)
 				player:ModifyGold(200, false, 0)
@@ -734,6 +735,9 @@ function OnNPCSpawned(keys)
 	else
 		Dmono.TurnsQueue = {0}
 	end
+	for i = 0, Dmono.PlayerCount - 1 do 
+		Dmono.SkipFlagTable[i] = false
+	end
 	Dmono:InsertNPC(npc)
 end
 
@@ -1029,7 +1033,6 @@ function Dmono:OnThink()
 				if player:GetAssignedHero() then
 					hero = player:GetAssignedHero()
 					pID = hero:GetPlayerID()
-					print(hero:GetGold())
 					CustomNetTables:SetTableValue(
 						"networth_players",
 						tostring(pID),
@@ -1047,7 +1050,6 @@ function Dmono:OnThink()
 				if player:GetAssignedHero() then
 					hero = player:GetAssignedHero()
 					pID = hero:GetPlayerID()
-					print(hero:GetGold())
 					CustomNetTables:SetTableValue(
 						"networth_players",
 						tostring(pID),
@@ -1112,10 +1114,12 @@ end
 
 function Dmono:HandleTurn()
 	local QueueTurns = self.TurnsQueue[self.CurrentPlayerIndex] + 1
-	local jailCondition = self.TurnsQueue[self.CurrentPlayerIndex]
 	local playerHero = Dmono:GetValueFromNPC(QueueTurns)
 	local prevIndex = QueueTurns - 1
 	local prevPlayerHero = Dmono:GetValueFromNPC(prevIndex)
+	local heroName = playerHero:GetUnitName()
+	local pID = playerHero:GetPlayerID()
+	print("now turn ".. heroName)
 	if self.TurnFlag and prevPlayerHero == nil then
 		prevPlayerHero = Dmono:GetValueFromNPC(self.PlayerCount)
 		prevPlayerHero:AddNewModifier(nil, nil, "modifier_stunned", {duration = -1})
@@ -1126,31 +1130,63 @@ function Dmono:HandleTurn()
 		prevPlayerHero:AddNewModifier(nil, nil, "modifier_silence", {duration = -1})
 		self.TurnFlag = false
 	end
-	if Dmono:GetJailStatus(jailCondition) == 0 then
+	if Dmono:GetJailStatus(pID) == 0 then
 		playerHero:RemoveAbility("Jail_Roll")
 		playerHero:RemoveAbility("Pay_Jail")
 		playerHero:AddAbility("Pay_Jail"):SetLevel(1)
 	end
-	if playerHero ~= nil then
-		playerHero:RemoveModifierByName("modifier_stunned")
-		playerHero:RemoveModifierByName("modifier_silence")
-	  else
-		print("Player with ID 0 has no hero registered in the game.")
+	
+	if Dmono:CheckSkipTurn(pID) == false then
+		if playerHero ~= nil then
+			local modifierStun = playerHero:FindAllModifiersByName("modifier_stunned")
+    		for _, modifier in pairs(modifierStun) do
+    		    playerHero:RemoveModifierByName(modifier:GetName())
+    		end
+			local modifierSilence = playerHero:FindAllModifiersByName("modifier_silence")
+    		for _, modifier in pairs(modifierSilence) do
+    		    playerHero:RemoveModifierByName(modifier:GetName())
+    		end
+		else
+			print("")
+		end
 	end
+	-- print("in handle "..playerHero:GetUnitName())
+	-- print("currentPlayerindex ".. self.CurrentPlayerIndex)
+	-- print("playerID "..pID)
+	-- print("===========================")
 	local timerHandle = Timers:CreateTimer("turn_timer", {
     	endTime = 45,
     	callback = function()
+			-- print("in callback "..playerHero:GetUnitName())
 			playerHero:AddNewModifier(nil, nil, "modifier_stunned", {duration = -1})
 			playerHero:AddNewModifier(nil, nil, "modifier_silence", {duration = -1})
 			self.CurrentPlayerIndex = self.CurrentPlayerIndex + 1
 			if self.PlayerCount < self.CurrentPlayerIndex then
 				self.CurrentPlayerIndex = 1
 			end
-			Say(nil, "turn changed " .. QueueTurns .. " turn index " .. self.CurrentPlayerIndex .. " player count " .. self.PlayerCount, false)
+			Say(nil, "turn changed(timer callback)", false)
 			self:HandleTurn()
     	end
    	})
+
 	self.currentTurnTimerHandle = timerHandle
+
+	if Dmono:CheckSkipTurn(pID) then 
+		Dmono:SetSkipFlagTable(pID, false)
+		if playerHero ~= nil then
+			local modifierStun = playerHero:FindAllModifiersByName("modifier_stunned")
+    		for _, modifier in pairs(modifierStun) do
+    		    playerHero:RemoveModifierByName(modifier:GetName())
+    		end
+			local modifierSilence = playerHero:FindAllModifiersByName("modifier_silence")
+    		for _, modifier in pairs(modifierSilence) do
+    		    playerHero:RemoveModifierByName(modifier:GetName())
+    		end
+		else
+			print("")
+		end
+		Dmono:SetNewTurn()
+	end
 end
 
 function Dmono:ColorForTeam( teamID )
@@ -1159,6 +1195,18 @@ function Dmono:ColorForTeam( teamID )
 		color = { 255, 255, 255 } 
 	end
 	return color
+end
+
+function Dmono:SkipTurn(playerID)
+	self.SkipFlagTable[playerID] = true
+end
+
+function Dmono:SetSkipFlagTable(index, value)
+	self.SkipFlagTable[index] = value
+end	
+
+function Dmono:CheckSkipTurn(playerID)
+	return self.SkipFlagTable[playerID]
 end
 
 function Dmono:SetNewTurn()
@@ -1170,7 +1218,7 @@ function Dmono:SetNewTurn()
 	if self.PlayerCount < self.CurrentPlayerIndex then
 		self.CurrentPlayerIndex = 1
 	end
-	Say(nil, "turn changed", false)
+	Say(nil, "turn changed(setnew)", false)
 	self:HandleTurn()
 end
 

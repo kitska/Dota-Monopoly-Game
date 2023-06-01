@@ -138,6 +138,7 @@ function OnChestSector( event )
 	Dmono.ChestSectorScriptTable[randForChest](player)
 	if Dmono:GetChestFlag() then
 		return
+		Dmono:SetChestFlag(false)
 	else
 		Dmono:SetNewTurn()
 	end
@@ -147,10 +148,11 @@ function OnChanceSector( event )
 	player = event.activator
 	local pID = player:GetPlayerID()
 	local playerPos = Dmono:GetFakePos(pID)
-	local randForChance = RandomInt(1, 16)
+	local randForChance = 10--RandomInt(1, 16)
 	Dmono.ChanceSectorScriptTable[randForChance](player)
 	if Dmono:GetChanceFlag() then
 		return
+		Dmono:SetChanceFlag(false)
 	else
 		Dmono:SetNewTurn()
 	end
@@ -176,4 +178,12 @@ function InJailTrigger( event )
 	player:RemoveAbility("Roll")
 	player:AddAbility("Jail_Roll"):SetLevel(1)
 	player:AddAbility("Pay_Jail"):SetLevel(1)
+end
+
+function SkipTurnTrigger( event )
+	player = event.activator
+	local pID = player:GetPlayerID()
+	Dmono:SkipTurn(pID)
+	local modifier = player:AddNewModifier(nil, nil, "modifier_crystal_maiden_frostbite", {duration = -1})
+	Dmono:SetNewTurn()
 end
