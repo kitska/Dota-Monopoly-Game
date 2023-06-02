@@ -48,6 +48,7 @@ function Dmono:InitGameMode()
 	Dmono.CurrentPlayerIndex = 1
 	Dmono.TurnFlag = false
 	Dmono.SkipFlagTable = {}
+	Dmono.RootModifierFlagTable = {}
 
 	Dmono.JailTable = {}
 	Dmono.JailDiceCounter = 0
@@ -477,7 +478,7 @@ function Dmono:InitGameMode()
 	GameRules:SetHeroRespawnEnabled(false)
 	GameRules:LockCustomGameSetupTeamAssignment(false)
 	GameRules:SetHeroSelectionTime(999)
-	GameRules:SetPreGameTime(5)
+	GameRules:SetPreGameTime(10)
 	GameRules:GetGameModeEntity():SetFogOfWarDisabled(true)
 	--GameRules:GetGameModeEntity():SetCameraDistanceOverride( 3000 )
 	
@@ -737,6 +738,7 @@ function OnNPCSpawned(keys)
 	end
 	for i = 0, Dmono.PlayerCount - 1 do 
 		Dmono.SkipFlagTable[i] = false
+		Dmono.RootModifierFlagTable[i] = false
 	end
 	Dmono:InsertNPC(npc)
 end
@@ -1067,7 +1069,6 @@ end
 function Dmono:ParticleToSectors()
 	local sectorUnit
 	local digitsCount
-
 	for i = 1, 28 do
 		if i == 3 then
 			sectorUnit = Entities:FindByName(nil,("sector_station_1"))
@@ -1120,6 +1121,10 @@ function Dmono:HandleTurn()
 	local heroName = playerHero:GetUnitName()
 	local pID = playerHero:GetPlayerID()
 	print("now turn ".. heroName)
+	if playerHero:FindModifierByName("modifier_winter_wyvern_cold_embrace") ~= nil and Dmono.RootModifierFlagTable[pID] then
+		playerHero:RemoveModifierByName("modifier_winter_wyvern_cold_embrace")
+		Dmono.RootModifierFlagTable[pID] = false
+	end
 	if self.TurnFlag and prevPlayerHero == nil then
 		prevPlayerHero = Dmono:GetValueFromNPC(self.PlayerCount)
 		prevPlayerHero:AddNewModifier(nil, nil, "modifier_stunned", {duration = -1})
@@ -1173,6 +1178,7 @@ function Dmono:HandleTurn()
 
 	if Dmono:CheckSkipTurn(pID) then 
 		Dmono:SetSkipFlagTable(pID, false)
+		Dmono.RootModifierFlagTable[pID] = true
 		if playerHero ~= nil then
 			local modifierStun = playerHero:FindAllModifiersByName("modifier_stunned")
     		for _, modifier in pairs(modifierStun) do

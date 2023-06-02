@@ -184,6 +184,6 @@ function SkipTurnTrigger( event )
 	player = event.activator
 	local pID = player:GetPlayerID()
 	Dmono:SkipTurn(pID)
-	local modifier = player:AddNewModifier(nil, nil, "modifier_crystal_maiden_frostbite", {duration = -1})
+	local modifier = player:AddNewModifier(nil, nil, "modifier_winter_wyvern_cold_embrace", {duration = -1})
 	Dmono:SetNewTurn()
 end
